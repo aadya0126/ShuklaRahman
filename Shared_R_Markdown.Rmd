@@ -9,11 +9,13 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## TRIAL
+## INSTRUCTIONS
 
-```{r Made a new R chunk}
-
-Made a new R chunk
-
+```{r}
+#1 text each other before and after coding from our ends bc two of us can't work simultaneously
+#2 pull before workinh
+# push after working
+# make the commit comments as detailed as possible bc grading will depend on that
 ```
+
 
