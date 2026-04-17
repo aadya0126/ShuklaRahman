@@ -39,7 +39,8 @@ Delhi_dataset_raw <- read.csv(here(
 
 ```{r Dhaka Dataset}
 
-
+BD_dataset_raw <- read.csv(here("AQI Bangladesh.csv"),
+        stringsAsFactors = TRUE)
 
 ```
 
