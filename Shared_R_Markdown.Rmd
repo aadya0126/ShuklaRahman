@@ -18,7 +18,16 @@ knitr::opts_chunk$set(echo = TRUE)
 # make the commit comments as detailed as possible bc grading will depend on that
 ```
 
-## DATA WRANGLING
+## What to focus on/ DELETE FOR FINAL OUTPUT
+
+```{r}
+# Filter for columns (6): Location, Date/Time (in ymd format), O3, PM 2.5, PM 10, AQI
+# Column names: Location, Date, O3, PM2.5, PM10, AQI
+# Might need extra columns for Month and Year separately BUT AFTER INITIAL WRANGLING
+```
+
+
+## INITIAL DATA WRANGLING
 
 ```{r Loading packages, checking working directory}
 
@@ -41,6 +50,16 @@ Delhi_dataset_raw <- read.csv(here(
 
 BD_dataset_raw <- read.csv(here("AQI Bangladesh.csv"),
         stringsAsFactors = TRUE)
+
+```
+
+```{r Combining Datasets Into a New Dataframe}
+
+```
+
+## TIME SERIES ANALYSES
+
+```{r}
 
 ```
 
