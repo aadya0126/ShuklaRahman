@@ -3,6 +3,8 @@ title: "ENV 872L Final Project"
 author: "Aadya Shukla, Humayra Rahman"
 date: "`r Sys.Date()`"
 output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -21,6 +23,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## What to focus on/ DELETE FOR FINAL OUTPUT
 
 ```{r}
+# Limiting data from January 1st, 2003 to December 31st, 2023 because we don't have full year's data for 2000 and 2024 for Delhi, nice to see a 20 year change
 # Filter for columns (6): Location, Date/Time (in ymd format), O3, PM 2.5, PM 10, AQI
 # Column names: Location, Date, O3, PM2.5, PM10, AQI
 # Might need extra columns for Month and Year separately BUT AFTER INITIAL WRANGLING
@@ -33,7 +36,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(dplyr); library(lubridate); library(tidyverse);
 library(here); library(zoo); library(trend);
-library(Kendall); library(tseries)
+library(Kendall); library(tseries); library(ggplot2)
 
 here()
 
@@ -48,6 +51,8 @@ Delhi_dataset_raw <- read.csv(here(
 Delhi_dataset_summarized <- Delhi_dataset_raw %>% 
   select(city, event_timestamp, pm25, pm10, o3, aqi) %>% 
   mutate(event_timestamp = ymd_hms(event_timestamp)) %>% 
+  filter(event_timestamp >= ymd("2003-01-01") &
+    event_timestamp <= ymd("2023-12-31")) %>% 
   mutate(month = month(event_timestamp),
          year = year(event_timestamp)) %>% 
   group_by(month, year) %>% 
@@ -116,11 +121,17 @@ delhi_final_processed <- read.csv(here("processed/delhi_final_processed.csv"))
 #combining into one dataframe
 combined_dataset <- rbind(dhaka_final_processed, delhi_final_processed)
 
+combined_dataset <- mutate(combined_dataset,
+                           first.month = make_date(year, month, 1))
+
 ```
 
 ## TIME SERIES ANALYSES
 
 ```{r}
-
+ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
+  geom_line() +
+  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
+  geom_smooth(method = lm) 
 ```
 
