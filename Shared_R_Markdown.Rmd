@@ -13,9 +13,33 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 #1 text each other before and after coding from our ends bc two of us can't work simultaneously
-#2 pull before workinh
+#2 pull before working
 # push after working
 # make the commit comments as detailed as possible bc grading will depend on that
 ```
 
+## DATA WRANGLING
+
+```{r Loading packages, checking working directory}
+
+library(tidyverse); library(here); library(zoo);
+library(trend); library(Kendall); library(tseries)
+
+here()
+
+```
+
+```{r Delhi Dataset}
+
+Delhi_dataset_raw <- read.csv(here(
+  "DelhiDataset/delhi_air_quality_feature_store_processed.csv"),
+  stringsAsFactors = TRUE)
+
+```
+
+```{r Dhaka Dataset}
+
+
+
+```
 
