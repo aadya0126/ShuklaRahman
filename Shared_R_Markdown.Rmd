@@ -65,7 +65,7 @@ write.csv(Delhi_dataset_summarized,
 ```
 
 ```{r Dhaka Dataset}
-
+#reading csv file
 BD_dataset_raw <- read.csv(here("AQI Bangladesh.csv"),
         stringsAsFactors = TRUE)
 
@@ -109,6 +109,12 @@ write.csv(dhaka_dataset_summarized,
 ```
 
 ```{r Combining Datasets Into a New Dataframe}
+#reading both datasets
+dhaka_final_processed <- read.csv(here("processed/dhaka_final_processed.csv"))
+delhi_final_processed <- read.csv(here("processed/delhi_final_processed.csv"))
+
+#combining into one dataframe
+combined_dataset <- rbind(dhaka_final_processed, delhi_final_processed)
 
 ```
 
