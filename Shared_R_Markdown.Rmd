@@ -31,8 +31,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r Loading packages, checking working directory}
 
-library(tidyverse); library(here); library(zoo);
-library(trend); library(Kendall); library(tseries)
+library(dplyr); library(lubridate); library(tidyverse);
+library(here); library(zoo); library(trend);
+library(Kendall); library(tseries)
 
 here()
 
@@ -44,6 +45,20 @@ Delhi_dataset_raw <- read.csv(here(
   "DelhiDataset/delhi_air_quality_feature_store_processed.csv"),
   stringsAsFactors = TRUE)
 
+Delhi_dataset_summarized <- Delhi_dataset_raw %>% 
+  select(city, event_timestamp, pm25, pm10, o3, aqi) %>% 
+  mutate(event_timestamp = ymd_hms(event_timestamp)) %>% 
+  mutate(month = month(event_timestamp),
+         year = year(event_timestamp)) %>% 
+  group_by(month, year) %>% 
+  summarize(
+    PM2.5 = mean(pm25, na.rm = TRUE),
+    PM10 = mean(pm10, na.rm = TRUE),
+    O3 = mean(o3, na.rm = TRUE),
+    AQI = mean(aqi, na.rm = TRUE)
+  ) %>% 
+  mutate(Location = "Delhi")
+  
 ```
 
 ```{r Dhaka Dataset}
