@@ -51,6 +51,28 @@ Delhi_dataset_raw <- read.csv(here(
 BD_dataset_raw <- read.csv(here("AQI Bangladesh.csv"),
         stringsAsFactors = TRUE)
 
+#filtering for Dhaka only
+dhaka_dataset_raw <- BD_dataset_raw %>%
+  filter(city_name == "Dhaka")
+
+view(dhaka_dataset_raw)
+
+#filtered for date,location,pm2.5,pm10,aqi,o3
+dhaka_air <- dhaka_dataset_raw %>%
+  filter(city_name == "Dhaka") %>%
+  select(city_name, datetime, ozone, pm2_5, pm10, aqi) %>%
+  rename(
+    Location  = city_name,
+    Date = datetime,
+    O3        = ozone,
+    PM2.5     = pm2_5,
+    PM10      = pm10,
+    AQI       = aqi
+  ) %>%
+  mutate(date_time = ymd_hm(date_time))
+
+
+
 ```
 
 ```{r Combining Datasets Into a New Dataframe}
