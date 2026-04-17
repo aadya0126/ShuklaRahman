@@ -58,6 +58,9 @@ Delhi_dataset_summarized <- Delhi_dataset_raw %>%
     AQI = mean(aqi, na.rm = TRUE)
   ) %>% 
   mutate(Location = "Delhi")
+
+write.csv(Delhi_dataset_summarized, 
+          here("processed/delhi_final_processed.csv"), row.names = FALSE)
   
 ```
 
