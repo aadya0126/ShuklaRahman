@@ -74,6 +74,7 @@ view(dhaka_dataset_raw)
 
 #filtered for date,location,pm2.5,pm10,aqi,o3
 dhaka_air <- dhaka_dataset_raw %>%
+  mutate(datetime = ymd_hm(datetime)) %>%
   filter(city_name == "Dhaka") %>%
   select(city_name, datetime, ozone, pm2_5, pm10, aqi) %>%
   rename(
@@ -83,10 +84,24 @@ dhaka_air <- dhaka_dataset_raw %>%
     PM2.5     = pm2_5,
     PM10      = pm10,
     AQI       = aqi
+  ) 
+
+dhaka_dataset_summarized <- dhaka_air %>%
+  mutate(month = month(Date),
+         year  = year(Date)) %>%
+  group_by(month, year) %>%
+  summarize(
+    PM2.5 = mean(PM2.5, na.rm = TRUE),
+    PM10  = mean(PM10,  na.rm = TRUE),
+    O3    = mean(O3,    na.rm = TRUE),
+    AQI   = mean(AQI,   na.rm = TRUE)
   ) %>%
-  mutate(date_time = ymd_hm(date_time))
+  mutate(Location = "Dhaka")
 
+view(dhaka_dataset_summarized)
 
+write.csv(dhaka_dataset_summarized, 
+          here("processed/dhaka_final_processed.csv"), row.names = FALSE)
 
 ```
 
