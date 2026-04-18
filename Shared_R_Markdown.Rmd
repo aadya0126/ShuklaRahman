@@ -94,6 +94,10 @@ dhaka_air <- dhaka_dataset_raw %>%
     AQI       = aqi
   ) 
 
+# Filter date range
+dhaka_air <- dhaka_air %>%
+  filter(Date >= as.Date("2003-01-01") & Date <= as.Date("2023-12-31"))
+
 dhaka_dataset_summarized <- dhaka_air %>%
   mutate(month = month(Date),
          year  = year(Date)) %>%
@@ -129,9 +133,29 @@ combined_dataset <- mutate(combined_dataset,
 ## TIME SERIES ANALYSES
 
 ```{r}
+#AQI
 ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
   geom_line() +
   scale_x_date(date_breaks = "10 years", date_labels = "%Y")
   geom_smooth(method = lm) 
+  
+#PM2.5
+  ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
+  geom_line() +
+  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
+  geom_smooth(method = lm) 
+  
+#PM10
+  ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
+  geom_line() +
+  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
+  geom_smooth(method = lm) 
+  
+#O3
+  ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
+  geom_line() +
+  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
+  geom_smooth(method = lm) 
+  
 ```
 
