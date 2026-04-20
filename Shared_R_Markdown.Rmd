@@ -127,6 +127,8 @@ combined_dataset <- rbind(dhaka_final_processed, delhi_final_processed)
 
 combined_dataset <- mutate(combined_dataset,
                            first.month = make_date(year, month, 1))
+#checking for missing data
+colSums(is.na(combined_dataset))
 
 ```
 
