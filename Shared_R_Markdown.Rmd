@@ -196,9 +196,6 @@ plot(Delhi.PM10.monthly.decomposed)
 
 
 
-
-#for Dhaka
-
 # Monthly AQI for Dhaka
 Dhaka.AQI.monthly.ts <- ts(dhaka_final_processed$AQI,
                            start = c(2003,1), frequency = 12)
@@ -229,6 +226,57 @@ Dhaka.PM10.monthly.ts <- ts(dhaka_final_processed$PM10,
 Dhaka.PM10.monthly.decomposed <- stl(Dhaka.PM10.monthly.ts,
                                     s.window = "periodic")
 plot(Dhaka.PM10.monthly.decomposed)
+
+
+
+#Mann-Kendall Dhaka
+
+# Dhaka AQI
+Dhaka.AQI.monthly.trend <- trend::smk.test(Dhaka.AQI.monthly.ts)
+Dhaka.AQI.monthly.trend
+summary(Dhaka.AQI.monthly.trend)
+
+
+# Dhaka PM2.5
+Dhaka.PM2.5.monthly.trend <- trend::smk.test(Dhaka.PM2.5.monthly.ts)
+Dhaka.PM2.5.monthly.trend
+summary(Dhaka.PM2.5.monthly.trend)
+
+# Dhaka PM10
+Dhaka.PM10.monthly.trend <- trend::smk.test(Dhaka.PM10.monthly.ts)
+Dhaka.PM10.monthly.trend
+summary(Dhaka.PM10.monthly.trend)
+
+# Dhaka O3
+Dhaka.Ozone.monthly.trend <- trend::smk.test(Dhaka.Ozone.monthly.ts)
+Dhaka.Ozone.monthly.trend
+summary(Dhaka.Ozone.monthly.trend)
+
+
+# Mann-Kendall Delhi
+
+# Delhi AQI
+Delhi.AQI.monthly.trend <- trend::smk.test(Delhi.AQI.monthly.ts)
+Delhi.AQI.monthly.trend
+summary(Delhi.AQI.monthly.trend)
+
+
+# Delhi PM2.5
+Delhi.PM2.5.monthly.trend <- trend::smk.test(Delhi.PM2.5.monthly.ts)
+Delhi.PM2.5.monthly.trend
+summary(Delhi.PM2.5.monthly.trend)
+
+# Delhi PM10
+Delhi.PM10.monthly.trend <- trend::smk.test(Delhi.PM10.monthly.ts)
+Delhi.PM10.monthly.trend
+summary(Delhi.PM10.monthly.trend)
+
+# Delhi O3
+Delhi.Ozone.monthly.trend <- trend::smk.test(Delhi.Ozone.monthly.ts)
+Delhi.Ozone.monthly.trend
+summary(Delhi.Ozone.monthly.trend)
+
+
 
 
 ```
