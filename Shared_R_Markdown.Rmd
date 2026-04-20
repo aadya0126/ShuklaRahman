@@ -170,12 +170,6 @@ Delhi.AQI.monthly.decomposed <- stl(Delhi.AQI.monthly.ts,
                                     s.window = "periodic")
 plot(Delhi.AQI.monthly.decomposed)
 
-# Yearly AQI for Delhi
-Delhi.AQI.yearly.ts <- ts(delhi_final_processed$AQI,
-                           start = c(2003,1), frequency = 1)
-Delhi.AQI.yearly.decomposed <- stl(Delhi.AQI.yearly.ts,
-                                    s.window = "periodic")
-plot(Delhi.AQI.yearly.decomposed)
 
 # Monthly Ozone for Delhi
 Delhi.Ozone.monthly.ts <- ts(delhi_final_processed$O3,
@@ -184,12 +178,6 @@ Delhi.Ozone.monthly.decomposed <- stl(Delhi.Ozone.monthly.ts,
                                     s.window = "periodic")
 plot(Delhi.Ozone.monthly.decomposed)
 
-# Yearly Ozone for Delhi
-Delhi.Ozone.yearly.ts <- ts(delhi_final_processed$O3,
-                             start = c(2003,1), frequency = 1)
-Delhi.Ozone.yearly.decomposed <- stl(Delhi.Ozone.yearly.ts,
-                                    s.window = "periodic")
-plot(Delhi.Ozone.yearly.decomposed)
 
 # Monthly PM2.5 for Delhi
 Delhi.PM2.5.monthly.ts <- ts(delhi_final_processed$PM2.5,
@@ -198,12 +186,6 @@ Delhi.PM2.5.monthly.decomposed <- stl(Delhi.PM2.5.monthly.ts,
                                     s.window = "periodic")
 plot(Delhi.PM2.5.monthly.decomposed)
 
-# Yearly PM2.5 for Delhi
-Delhi.PM2.5.yearly.ts <- ts(delhi_final_processed$PM2.5,
-                             start = c(2003,1), frequency = 1)
-Delhi.PM2.5.yearly.decomposed <- stl(Delhi.PM2.5.yearly.ts,
-                                    s.window = "periodic")
-plot(Delhi.PM2.5.yearly.decomposed)
 
 # Monthly PM10 for Delhi
 Delhi.PM10.monthly.ts <- ts(delhi_final_processed$PM10,
@@ -212,12 +194,42 @@ Delhi.PM10.monthly.decomposed <- stl(Delhi.PM10.monthly.ts,
                                     s.window = "periodic")
 plot(Delhi.PM10.monthly.decomposed)
 
-# Yearly PM10 for Delhi
-Delhi.PM10.yearly.ts <- ts(delhi_final_processed$PM10,
-                            start = c(2003,1), frequency = 1)
-Delhi.PM10.yearly.decomposed <- stl(Delhi.PM10.yearly.ts,
+
+
+
+#for Dhaka
+
+# Monthly AQI for Dhaka
+Dhaka.AQI.monthly.ts <- ts(dhaka_final_processed$AQI,
+                           start = c(2003,1), frequency = 12)
+Dhaka.AQI.monthly.decomposed <- stl(Dhaka.AQI.monthly.ts,
                                     s.window = "periodic")
-plot(Delhi.PM10.yearly.decomposed)
+plot(Dhaka.AQI.monthly.decomposed)
+
+
+# Monthly Ozone for Dhaka
+Dhaka.Ozone.monthly.ts <- ts(dhaka_final_processed$O3,
+                             start = c(2003,1), frequency = 12)
+Dhaka.Ozone.monthly.decomposed <- stl(Dhaka.Ozone.monthly.ts,
+                                    s.window = "periodic")
+plot(Dhaka.Ozone.monthly.decomposed)
+
+
+# Monthly PM2.5 for Dhaka
+Dhaka.PM2.5.monthly.ts <- ts(dhaka_final_processed$PM2.5,
+                             start = c(2003,1), frequency = 12)
+Dhaka.PM2.5.monthly.decomposed <- stl(Dhaka.PM2.5.monthly.ts,
+                                    s.window = "periodic")
+plot(Dhaka.PM2.5.monthly.decomposed)
+
+
+# Monthly PM10 for Dhaka
+Dhaka.PM10.monthly.ts <- ts(dhaka_final_processed$PM10,
+                            start = c(2003,1), frequency = 12)
+Dhaka.PM10.monthly.decomposed <- stl(Dhaka.PM10.monthly.ts,
+                                    s.window = "periodic")
+plot(Dhaka.PM10.monthly.decomposed)
+
 
 ```
 
