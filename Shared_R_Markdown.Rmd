@@ -227,57 +227,140 @@ Dhaka.PM10.monthly.decomposed <- stl(Dhaka.PM10.monthly.ts,
                                     s.window = "periodic")
 plot(Dhaka.PM10.monthly.decomposed)
 
+```
+
+```{r Mann-Kendall Tests}
 
 
-#Mann-Kendall Dhaka
+# Seasonal Mann-Kendall Dhaka
 
 # Dhaka AQI
 Dhaka.AQI.monthly.trend <- trend::smk.test(Dhaka.AQI.monthly.ts)
 Dhaka.AQI.monthly.trend
 summary(Dhaka.AQI.monthly.trend)
+# Dhaka AQI not significant (p = 0.0768)
 
 
 # Dhaka PM2.5
 Dhaka.PM2.5.monthly.trend <- trend::smk.test(Dhaka.PM2.5.monthly.ts)
 Dhaka.PM2.5.monthly.trend
 summary(Dhaka.PM2.5.monthly.trend)
+# Dhaka PM2.5 not significant (p = 0.0768)
 
 # Dhaka PM10
 Dhaka.PM10.monthly.trend <- trend::smk.test(Dhaka.PM10.monthly.ts)
 Dhaka.PM10.monthly.trend
 summary(Dhaka.PM10.monthly.trend)
+# Dhaka PM2.5 not significant (p = 0.1068)
 
 # Dhaka O3
 Dhaka.Ozone.monthly.trend <- trend::smk.test(Dhaka.Ozone.monthly.ts)
 Dhaka.Ozone.monthly.trend
 summary(Dhaka.Ozone.monthly.trend)
+# Dhaka ozone (O3) is significant (1.432e-06)
 
-
-# Mann-Kendall Delhi
+# Seasonal Mann-Kendall Delhi
 
 # Delhi AQI
 Delhi.AQI.monthly.trend <- trend::smk.test(Delhi.AQI.monthly.ts)
 Delhi.AQI.monthly.trend
 summary(Delhi.AQI.monthly.trend)
-
+# Delhi AQI not significant (0.3226)
 
 # Delhi PM2.5
 Delhi.PM2.5.monthly.trend <- trend::smk.test(Delhi.PM2.5.monthly.ts)
 Delhi.PM2.5.monthly.trend
 summary(Delhi.PM2.5.monthly.trend)
+# Delhi AQI not significant (0.08624)
 
 # Delhi PM10
 Delhi.PM10.monthly.trend <- trend::smk.test(Delhi.PM10.monthly.ts)
 Delhi.PM10.monthly.trend
 summary(Delhi.PM10.monthly.trend)
+# Delhi PM10 not significant (0.4257)
 
 # Delhi O3
 Delhi.Ozone.monthly.trend <- trend::smk.test(Delhi.Ozone.monthly.ts)
 Delhi.Ozone.monthly.trend
 summary(Delhi.Ozone.monthly.trend)
+# Delhi ozone (O3) not significant (0.3098)
 
 
+# Non-Seasonal Mann-Kendall Dhaka
 
+# Dhaka AQI
+Dhaka.monthly.AQI.nonseasonal <- Dhaka.AQI.monthly.ts - 
+  Dhaka.AQI.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.AQI.trend <- Kendall::MannKendall(
+  Dhaka.monthly.AQI.nonseasonal)
+Dhaka.nonseasonal.AQI.trend
+summary(Dhaka.nonseasonal.AQI.trend)
+
+# Dhaka PM2.5
+Dhaka.monthly.PM2.5.nonseasonal <- Dhaka.PM2.5.monthly.ts - 
+  Dhaka.PM2.5.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.PM2.5.trend <- Kendall::MannKendall(
+  Dhaka.monthly.PM2.5.nonseasonal)
+Dhaka.nonseasonal.PM2.5.trend
+summary(Dhaka.nonseasonal.PM2.5.trend)
+
+# Dhaka PM10
+Dhaka.monthly.PM10.nonseasonal <- Dhaka.PM10.monthly.ts - 
+  Dhaka.PM10.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.PM10.trend <- Kendall::MannKendall(
+  Dhaka.monthly.PM10.nonseasonal)
+Dhaka.nonseasonal.PM10.trend
+summary(Dhaka.nonseasonal.PM10.trend)
+
+# Dhaka O3
+Dhaka.monthly.Ozone.nonseasonal <- Dhaka.Ozone.monthly.ts - 
+  Dhaka.Ozone.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.Ozone.trend <- Kendall::MannKendall(
+  Dhaka.monthly.Ozone.nonseasonal)
+Dhaka.nonseasonal.Ozone.trend
+summary(Dhaka.nonseasonal.Ozone.trend)
+
+# Non-Seasonal Mann-Kendall Delhi
+
+# Delhi AQI
+Delhi.monthly.AQI.nonseasonal <- Delhi.AQI.monthly.ts - 
+  Delhi.AQI.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.AQI.trend <- Kendall::MannKendall(
+  Delhi.monthly.AQI.nonseasonal)
+Delhi.nonseasonal.AQI.trend
+summary(Delhi.nonseasonal.AQI.trend)
+
+# Delhi PM2.5
+Delhi.monthly.PM2.5.nonseasonal <- Delhi.PM2.5.monthly.ts - 
+  Delhi.PM2.5.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.PM2.5.trend <- Kendall::MannKendall(
+  Delhi.monthly.PM2.5.nonseasonal)
+Delhi.nonseasonal.PM2.5.trend
+summary(Delhi.nonseasonal.PM2.5.trend)
+
+# Delhi PM10
+Delhi.monthly.PM10.nonseasonal <- Delhi.PM10.monthly.ts - 
+  Delhi.PM10.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.PM10.trend <- Kendall::MannKendall(
+  Delhi.monthly.PM10.nonseasonal)
+Delhi.nonseasonal.PM10.trend
+summary(Delhi.nonseasonal.PM10.trend)
+
+# Delhi O3
+Delhi.monthly.Ozone.nonseasonal <- Delhi.Ozone.monthly.ts - 
+  Delhi.Ozone.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.Ozone.trend <- Kendall::MannKendall(
+  Delhi.monthly.Ozone.nonseasonal)
+Delhi.nonseasonal.Ozone.trend
+summary(Delhi.nonseasonal.Ozone.trend)
 
 ```
 
