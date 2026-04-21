@@ -393,6 +393,17 @@ t.test(O3 ~ Location, data = combined_dataset)
 
 ```
 
+Table: Summary of two sample t-test Results
+
+Variable | p-value | Dhaka mean | Delhi mean
+:---: | :---: | :---: |:---: 
+AQI | **2.2e-16** | 170.35 | 275.71
+PM2.5 | ***2.2e-16**  | 100.21 | 240.54
+PM10 | **2.2e-16**  | 169.18 | 242.17
+O3| **2.2e-16**  | 50.87 | 31.78
+
+
+
 ```{r linear regressions}
 
 #Linear Regression
@@ -415,3 +426,11 @@ O3.model <- lm(O3 ~ first.month * Location, data = combined_dataset)
 summary(O3.model)
 ```
 
+Table: Summary of Linear Regression Results
+
+Variable | p-value | Min | Median | Max | R-squared
+:---: | :---: | :---: |:---: |:---: |:---: 
+AQI | **2.2e-16** | -152.894 | -1.296 | 93.331 | 0.812
+PM2.5 | **2.2e-16** | -127.439 | -3.511 | 79.986 | 0.894
+PM10 | **2.2e-16** | -214.902 | -5.708 | 128.747 | 0.634
+O3 | **2.2e-16** | -30.487 | -4.640 | 32.740 | 0.424
