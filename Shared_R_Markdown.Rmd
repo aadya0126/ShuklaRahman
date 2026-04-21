@@ -11,15 +11,6 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## INSTRUCTIONS
-
-```{r}
-#1 text each other before and after coding from our ends bc two of us can't work simultaneously
-#2 pull before working
-# push after working
-# make the commit comments as detailed as possible bc grading will depend on that
-```
-
 ## What to focus on/ DELETE FOR FINAL OUTPUT
 
 ```{r}
@@ -29,10 +20,9 @@ knitr::opts_chunk$set(echo = TRUE)
 # Might need extra columns for Month and Year separately BUT AFTER INITIAL WRANGLING
 ```
 
-
 ## INITIAL DATA WRANGLING
 
-```{r Loading packages, checking working directory}
+```{r Loading packages, checking working directory, message=FALSE, warning=FALSE}
 
 library(dplyr); library(lubridate); library(tidyverse);
 library(here); library(zoo); library(trend);
@@ -129,36 +119,52 @@ combined_dataset <- mutate(combined_dataset,
                            first.month = make_date(year, month, 1))
 
 #checking for missing data
-colSums(is.na(combined_dataset))
+#colSums(is.na(combined_dataset))
+# found no NA data
 
 ```
 
 ## TIME SERIES ANALYSES
 
-```{r Plotting Initial Data}
+```{r Plotting Initial Data, message=FALSE, warning=FALSE}
 #AQI
 ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
   geom_line() +
-  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
-  geom_smooth(method = lm) 
+  theme_classic() +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(x = "Date", title = "Change over Time in AQI Levels in Delhi and Dhaka",
+       colour = "Locations")
   
 #PM2.5
   ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
   geom_line() +
-  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
-  geom_smooth(method = lm) 
+    theme_classic() +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "Change over Time in PM 2.5 Levels in Delhi and Dhaka",
+    colour = "Locations")
   
 #PM10
   ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
   geom_line() +
-  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
-  geom_smooth(method = lm) 
+    theme_classic() +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "Change over Time in PM 10 Levels in Delhi and Dhaka",
+    colour = "Locations")
   
 #O3
   ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
   geom_line() +
-  scale_x_date(date_breaks = "10 years", date_labels = "%Y")
-  geom_smooth(method = lm) 
+    theme_classic() +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "Change over Time in Ozone Levels in Delhi and Dhaka",
+    colour = "Locations")
   
 ```
 
@@ -398,7 +404,7 @@ Table: Summary of two sample t-test Results
 Variable | p-value | Dhaka mean | Delhi mean
 :---: | :---: | :---: |:---: 
 AQI | **2.2e-16** | 170.35 | 275.71
-PM2.5 | ***2.2e-16**  | 100.21 | 240.54
+PM2.5 | **2.2e-16**  | 100.21 | 240.54
 PM10 | **2.2e-16**  | 169.18 | 242.17
 O3| **2.2e-16**  | 50.87 | 31.78
 
