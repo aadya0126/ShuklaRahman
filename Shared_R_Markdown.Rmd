@@ -42,7 +42,7 @@ here()
 
 ```
 
-```{r Delhi Dataset}
+```{r Delhi Dataset, eval=FALSE}
 
 Delhi_dataset_raw <- read.csv(here(
   "DelhiDataset/delhi_air_quality_feature_store_processed.csv"),
@@ -69,7 +69,7 @@ write.csv(Delhi_dataset_summarized,
   
 ```
 
-```{r Dhaka Dataset}
+```{r Dhaka Dataset, eval=FALSE}
 #reading csv file
 BD_dataset_raw <- read.csv(here("AQI Bangladesh.csv"),
         stringsAsFactors = TRUE)
@@ -362,9 +362,22 @@ Delhi.nonseasonal.Ozone.trend <- Kendall::MannKendall(
 Delhi.nonseasonal.Ozone.trend
 summary(Delhi.nonseasonal.Ozone.trend)
 
+```
 
+Table: Summary of Mann-Kendall Results
 
-#two-sample t test
+Location | Variable | Seasonal p-value | Non-Seasonal p-value
+:---: | :---: | :---: |:---: 
+Dhaka | AQI | 0.0768 | 0.2045
+Dhaka | PM 2.5 | 0.0768 | 0.2354
+Dhaka | PM 10 | 0.1068 | 0.2354
+Dhaka | O3 | **1.43e-06** | **2.06e-06**
+Delhi | AQI | 0.3226 | 0.1078
+Delhi | PM 2.5 | 0.0862 | **0.0330**
+Delhi | PM 10 | 0.4257 | 0.1409
+Delhi | O3 | 0.3098 | 0.4421
+
+```{r two-sample t tests}
 
 # AQI
 t.test(AQI ~ Location, data = combined_dataset)
@@ -378,6 +391,9 @@ t.test(PM10 ~ Location, data = combined_dataset)
 # O3
 t.test(O3 ~ Location, data = combined_dataset)
 
+```
+
+```{r linear regressions}
 
 #Linear Regression
 
