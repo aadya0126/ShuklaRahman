@@ -362,5 +362,40 @@ Delhi.nonseasonal.Ozone.trend <- Kendall::MannKendall(
 Delhi.nonseasonal.Ozone.trend
 summary(Delhi.nonseasonal.Ozone.trend)
 
+
+
+#two-sample t test
+
+# AQI
+t.test(AQI ~ Location, data = combined_dataset)
+
+# PM2.5
+t.test(PM2.5 ~ Location, data = combined_dataset)
+
+# PM10
+t.test(PM10 ~ Location, data = combined_dataset)
+
+# O3
+t.test(O3 ~ Location, data = combined_dataset)
+
+
+#Linear Regression
+
+# AQI
+AQI.model <- lm(AQI ~ first.month * Location, data = combined_dataset)
+summary(AQI.model)
+
+# PM2.5
+PM2.5.model <- lm(PM2.5 ~ first.month * Location, data = combined_dataset)
+summary(PM2.5.model)
+
+# PM10
+PM10.model <- lm(PM10 ~ first.month * Location, data = combined_dataset)
+summary(PM10.model)
+
+
+# O3
+O3.model <- lm(O3 ~ first.month * Location, data = combined_dataset)
+summary(O3.model)
 ```
 
