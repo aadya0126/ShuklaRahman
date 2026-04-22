@@ -1,7 +1,7 @@
 ---
 title: "Comparing Air Pollution Trends Between Delhi, India and Dhaka, Bangladesh from 2003-2023"
 subtitle : "ENV 872L Final Project"
-author: "Aadya Shukla, Humayra Rahman"
+author: "Aadya Shukla and Humayra Rahman"
 date: "`r Sys.Date()`"
 output: pdf_document
 toc: true
@@ -9,11 +9,99 @@ toc: true
 
 \listoffigures
 \listoftables
+
+\newpage
+
 ## Introduction
-Air pollution is one of the most pressing environmental and public health challenges of the 21st century, particularly across South Asia, where rapid urbanization, industrial growth, vehicular emissions, and agricultural waste burning have made several cities among the most polluted in the world (Ditta et al., 2026). Delhi, the capital of India, and Dhaka, the capital of Bangladesh, are two such megacities that consistently rank among the worst for air quality globally, with both cities experiencing severe seasonal pollution cycles driven by winter temperature inversions, stubble burning, brick kilns, and vehicle emissions along the shared Indo-Gangetic Plain (Ditta et al., 2026; Begum et al., 2018). Despite their geographic proximity and shared pollution sources, the two cities have followed divergent regulatory paths. India launched its National Clean Air Programme in 2019 targeting significant reductions in particulate matter (Garg et al., 2022), while Bangladesh was among the first South Asian nations to ban two-stroke engine vehicles in the early 2000s and transition to CNG-powered alternatives (State of Global Air, n.d.), raising important questions about whether these differing policy trajectories have translated into meaningfully different pollution trends over time. While prior studies have individually examined air quality trends in Delhi (Garg et al., 2022; Singh et al., 2023) and Dhaka (Islam et al., 2021; Begum & Hopke, 2018), long-term comparative analyses spanning both cities remain limited. This project addresses that gap by using 20 years of monthly air quality data (2003 to 2023) to compare pollution trends in PM2.5, PM10, ozone (O3), and AQI across both cities, testing whether air quality exhibits a significant seasonal component or decreasing trend, whether Delhi's pollution is significantly worse than Dhaka's, and whether the two cities are improving at statistically different rates.
+Air pollution is one of the most pressing environmental and public health challenges of the 21st century, particularly across South Asia, where rapid urbanization, industrial growth, vehicular emissions, and agricultural waste burning have made several cities among the most polluted in the world (Ditta et al., 2026). Delhi, the capital of India, and Dhaka, the capital of Bangladesh, are two such megacities that consistently rank among the worst for air quality globally, with both cities experiencing severe seasonal pollution cycles driven by winter temperature inversions, stubble burning, brick kilns, and vehicle emissions along the shared Indo-Gangetic Plain (Ditta et al., 2026; Begum et al., 2018). Despite their geographic proximity and shared pollution sources, the two cities have followed divergent regulatory paths. India launched its National Clean Air Programme in 2019 targeting significant reductions in particulate matter (Garg et al., 2022), while Bangladesh was among the first South Asian nations to ban two-stroke engine vehicles in the early 2000s and transition to CNG-powered alternatives (State of Global Air, n.d.), raising important questions about whether these differing policy trajectories have translated into meaningfully different pollution trends over time.
+
+While prior studies have individually examined air quality trends in Delhi (Garg et al., 2022; Singh et al., 2023) and Dhaka (Islam et al., 2021; Begum & Hopke, 2018), long-term comparative analyses spanning both cities remain limited. This project addresses that gap by using 20 years of monthly air quality data (2003 to 2023) to compare pollution trends in PM2.5, PM10, ozone (O3), and AQI across both cities, testing whether air quality exhibits a significant seasonal component or decreasing trend, whether Delhi's pollution is significantly worse than Dhaka's, and whether the two cities are improving at statistically different rates.
+
 ## Data description
+
+### Dhaka Dataset
+The Dhaka air quality data was sourced from the Bangladesh Air Quality Index (AQI) Dataset (2000–2025), published by Tapon Paul of Daffodil International University and retrieved from Mendeley Data (Paul, 2026). The full dataset contains 1,048,551 hourly records spanning 103 cities across Bangladesh across 13 columns: city_id, city_name, lat, lon, datetime, pm10, pm2_5, carbon_monoxide, carbon_dioxide, nitrogen_dioxide, sulphur_dioxide, ozone, and aqi. AQI values are calculated according to the US EPA standard. 
+
+### Delhi Dataset
+The Delhi air quality data was sourced from the Processed Delhi Air Quality and Weather Data dataset curated by Abhinav Sarkar and retrieved from Hugging Face (Sarkar, 2024). The full dataset contains approximately 2.9 million hourly observations from multiple monitoring locations across Delhi from March 2000 to November 2024, across 15 columns: city, event_timestamp, temperature, humidity, pressure, wind_speed, wind_direction, pm25, pm10, no2, so2, o3, co, aqi, and location_id. The dataset was pre-processed prior to publication, with missing AQI values removed and remaining gaps addressed through mean imputation and nearest neighbor interpolation. 
+
 ## Methods
+
+We filtered for columns: Location, Date/Time (in ymd format), O3, PM 2.5, PM 10, AQI
+We limited our date range from January 1st, 2003 to December 31st, 2023 because the Dhaka dataset spans from 2000-2024 but we don't have data for every month in 2000 and 2024 for Delhi. To keep the data consistent and tangible, we focused on a 20 year trend.
+
+```{r warning=FALSE, message=FALSE}
+
+str(combined_dataset)
+
+colSums(is.na(combined_dataset))
+```
+
 ## Results
+
+```{r fig.cap = "AQI Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
+  geom_line() +
+  theme_classic() +
+  scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+  theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(x = "Date", title = "AQI Trend in Delhi and Dhaka (2003-2023)",
+       colour = "Locations")
+
+```
+
+```{r fig.cap = "PM 2.5 Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
+  geom_line() +
+    theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "PM 2.5 Trend in Delhi and Dhaka (2003-2023)",
+    colour = "Locations")
+
+```
+
+```{r fig.cap = "PM 10 Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
+  geom_line() +
+    theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "PM 10 Trend in Delhi and Dhaka (2003-2023)",
+    colour = "Locations")
+
+```
+
+```{r fig.cap = "Ozone (O3) Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
+  geom_line() +
+    theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "Ozone (O3) Trend in Delhi and Dhaka (2003-2023)",
+    colour = "Locations")
+
+```
+
 ## Discussion
 ## Limitations
 ## Conclusion
@@ -21,16 +109,9 @@ Air pollution is one of the most pressing environmental and public health challe
 
 ## What to focus on/ DELETE FOR FINAL OUTPUT
 
-```{r}
-# Limiting data from January 1st, 2003 to December 31st, 2023 because we don't have full year's data for 2000 and 2024 for Delhi, nice to see a 20 year change
-# Filter for columns (6): Location, Date/Time (in ymd format), O3, PM 2.5, PM 10, AQI
-# Column names: Location, Date, O3, PM2.5, PM10, AQI
-# Might need extra columns for Month and Year separately BUT AFTER INITIAL WRANGLING
-```
-
 ## INITIAL DATA WRANGLING
 
-```{r Loading packages, checking working directory, message=FALSE, warning=FALSE}
+```{r Loading packages, checking working directory, message=FALSE, warning=FALSE, echo=FALSE}
 
 library(dplyr); library(lubridate); library(tidyverse);
 library(here); library(zoo); library(trend);
@@ -40,7 +121,7 @@ here()
 
 ```
 
-```{r Delhi Dataset, eval=FALSE}
+```{r Delhi Dataset, eval=FALSE, echo=FALSE}
 
 Delhi_dataset_raw <- read.csv(here(
   "DelhiDataset/delhi_air_quality_feature_store_processed.csv"),
@@ -67,7 +148,7 @@ write.csv(Delhi_dataset_summarized,
   
 ```
 
-```{r Dhaka Dataset, eval=FALSE}
+```{r Dhaka Dataset, eval=FALSE, echo=FALSE}
 #reading csv file
 BD_dataset_raw <- read.csv(here("AQI Bangladesh.csv"),
         stringsAsFactors = TRUE)
@@ -133,65 +214,6 @@ combined_dataset <- mutate(combined_dataset,
 ```
 
 ## TIME SERIES ANALYSES
-
-```{r Plotting Initial Data, message=FALSE, warning=FALSE}
-
-# Trial Frequency Plot
-ggplot(combined_dataset, aes(x = AQI, color = Location)) +
-  geom_freqpoly()
-
-#AQI
-ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
-  geom_line() +
-  theme_classic() +
-  scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-  theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(x = "Date", title = "AQI Trend in Delhi and Dhaka (2003-2023)",
-       colour = "Locations")
-
-#PM2.5
-ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
-  geom_line() +
-    theme_classic() +
-    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-    theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(
-    x = "Date", title = "PM 2.5 Trend in Delhi and Dhaka (2003-2023)",
-    colour = "Locations")
-  
-#PM10
-ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
-  geom_line() +
-    theme_classic() +
-    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-    theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(
-    x = "Date", title = "PM 10 Trend in Delhi and Dhaka (2003-2023)",
-    colour = "Locations")
-  
-#O3
-ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
-  geom_line() +
-    theme_classic() +
-    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-    theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(
-    x = "Date", title = "Ozone (O3) Trend in Delhi and Dhaka (2003-2023)",
-    colour = "Locations")
-  
-```
 
 ```{r Creating time series objects}
 # Monthly AQI for Delhi
