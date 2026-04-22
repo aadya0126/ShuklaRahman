@@ -135,6 +135,41 @@ str(combined_dataset)
 colSums(is.na(combined_dataset))
 ```
 
+```{r Checking for normality AQI}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$AQI[combined_dataset$Location == "Delhi"],
+       main = "Delhi AQI")
+qqline(combined_dataset$AQI[combined_dataset$Location == "Delhi"],
+       col = "blue")
+qqnorm(combined_dataset$AQI[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka AQI")
+qqline(combined_dataset$AQI[combined_dataset$Location == "Dhaka"],
+       col = "blue")
+```
+
+```{r Checking for normality PM 2.5}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$PM2.5[combined_dataset$Location == "Delhi"],
+       main = "Delhi PM 2.5")
+qqnorm(combined_dataset$PM2.5[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka PM2.5")
+```
+
+```{r Checking for normality PM 10}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$PM10[combined_dataset$Location == "Delhi"],
+       main = "Delhi PM 10")
+qqnorm(combined_dataset$PM10[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka PM 10")
+```
+
+```{r Checking for normality Ozone}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$O3[combined_dataset$Location == "Delhi"],
+       main = "Delhi O3")
+qqnorm(combined_dataset$O3[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka O3")
+```
 ## Results
 
 ```{r fig.cap = "AQI Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
