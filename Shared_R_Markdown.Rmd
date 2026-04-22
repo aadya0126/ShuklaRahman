@@ -30,87 +30,6 @@ The Delhi air quality data was sourced from the Processed Delhi Air Quality and 
 We filtered for columns: Location, Date/Time (in ymd format), O3, PM 2.5, PM 10, AQI
 We limited our date range from January 1st, 2003 to December 31st, 2023 because the Dhaka dataset spans from 2000-2024 but we don't have data for every month in 2000 and 2024 for Delhi. To keep the data consistent and tangible, we focused on a 20 year trend.
 
-```{r warning=FALSE, message=FALSE}
-
-str(combined_dataset)
-
-colSums(is.na(combined_dataset))
-```
-
-## Results
-
-```{r fig.cap = "AQI Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
-
-ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
-  geom_line() +
-  theme_classic() +
-  scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-  theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(x = "Date", title = "AQI Trend in Delhi and Dhaka (2003-2023)",
-       colour = "Locations")
-
-```
-
-```{r fig.cap = "PM 2.5 Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
-
-ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
-  geom_line() +
-    theme_classic() +
-    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-    theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(
-    x = "Date", title = "PM 2.5 Trend in Delhi and Dhaka (2003-2023)",
-    colour = "Locations")
-
-```
-
-```{r fig.cap = "PM 10 Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
-
-ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
-  geom_line() +
-    theme_classic() +
-    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-    theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(
-    x = "Date", title = "PM 10 Trend in Delhi and Dhaka (2003-2023)",
-    colour = "Locations")
-
-```
-
-```{r fig.cap = "Ozone (O3) Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
-
-ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
-  geom_line() +
-    theme_classic() +
-    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
-    theme(legend.background = element_rect(colour = "black", fill = "white",
-    linewidth = 0.5)) +
-  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
-  geom_smooth(method = lm) +
-  labs(
-    x = "Date", title = "Ozone (O3) Trend in Delhi and Dhaka (2003-2023)",
-    colour = "Locations")
-
-```
-
-## Discussion
-## Limitations
-## Conclusion
-## References
-
-## What to focus on/ DELETE FOR FINAL OUTPUT
-
-## INITIAL DATA WRANGLING
-
 ```{r Loading packages, checking working directory, message=FALSE, warning=FALSE, echo=FALSE}
 
 library(dplyr); library(lubridate); library(tidyverse);
@@ -196,7 +115,7 @@ write.csv(dhaka_dataset_summarized,
 
 ```
 
-```{r Combining Datasets Into a New Dataframe}
+```{r Combining Datasets Into a New Dataframe, warning=FALSE, message=FALSE, echo=FALSE}
 #reading both datasets
 dhaka_final_processed <- read.csv(here("processed/dhaka_final_processed.csv"))
 delhi_final_processed <- read.csv(here("processed/delhi_final_processed.csv"))
@@ -207,11 +126,84 @@ combined_dataset <- rbind(dhaka_final_processed, delhi_final_processed)
 combined_dataset <- mutate(combined_dataset,
                            first.month = make_date(year, month, 1))
 
-#checking for missing data
-#colSums(is.na(combined_dataset))
-# found no NA data
+```
+
+```{r warning=FALSE, message=FALSE}
+
+str(combined_dataset)
+
+colSums(is.na(combined_dataset))
+```
+
+## Results
+
+```{r fig.cap = "AQI Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
+  geom_line() +
+  theme_classic() +
+  scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+  theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(x = "Date", title = "AQI Trend in Delhi and Dhaka (2003-2023)",
+       colour = "Locations")
 
 ```
+
+```{r fig.cap = "PM 2.5 Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
+  geom_line() +
+    theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "PM 2.5 Trend in Delhi and Dhaka (2003-2023)",
+    colour = "Locations")
+
+```
+
+```{r fig.cap = "PM 10 Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
+  geom_line() +
+    theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "PM 10 Trend in Delhi and Dhaka (2003-2023)",
+    colour = "Locations")
+
+```
+
+```{r fig.cap = "Ozone (O3) Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
+  geom_line() +
+    theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
+  scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
+  geom_smooth(method = lm) +
+  labs(
+    x = "Date", title = "Ozone (O3) Trend in Delhi and Dhaka (2003-2023)",
+    colour = "Locations")
+
+```
+
+## Discussion
+## Limitations
+## Conclusion
+## References
 
 ## TIME SERIES ANALYSES
 
