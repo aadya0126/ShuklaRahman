@@ -1,15 +1,22 @@
 ---
-title: "ENV 872L Final Project"
+title: "Comparing Air Pollution Trends Between Delhi, India and Dhaka, Bangladesh from 2003-2023"
+subtitle : "ENV 872L Final Project"
 author: "Aadya Shukla, Humayra Rahman"
 date: "`r Sys.Date()`"
 output: pdf_document
-editor_options: 
-  chunk_output_type: console
+toc: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+\listoffigures
+\listoftables
+## Introduction
+## Data description
+## Methods
+## Results
+## Discussion
+## Limitations
+## Conclusion
+## References
 
 ## What to focus on/ DELETE FOR FINAL OUTPUT
 
@@ -127,43 +134,60 @@ combined_dataset <- mutate(combined_dataset,
 ## TIME SERIES ANALYSES
 
 ```{r Plotting Initial Data, message=FALSE, warning=FALSE}
+
+# Trial Frequency Plot
+ggplot(combined_dataset, aes(x = AQI, color = Location)) +
+  geom_freqpoly()
+
 #AQI
 ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
   geom_line() +
   theme_classic() +
+  scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+  theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
   scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   geom_smooth(method = lm) +
-  labs(x = "Date", title = "Change over Time in AQI Levels in Delhi and Dhaka",
+  labs(x = "Date", title = "AQI Trend in Delhi and Dhaka (2003-2023)",
        colour = "Locations")
-  
+
 #PM2.5
-  ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
+ggplot(combined_dataset, aes(y = PM2.5, x = first.month, colour = Location)) + 
   geom_line() +
     theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
   scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   geom_smooth(method = lm) +
   labs(
-    x = "Date", title = "Change over Time in PM 2.5 Levels in Delhi and Dhaka",
+    x = "Date", title = "PM 2.5 Trend in Delhi and Dhaka (2003-2023)",
     colour = "Locations")
   
 #PM10
-  ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
+ggplot(combined_dataset, aes(y = PM10, x = first.month, colour = Location)) + 
   geom_line() +
     theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
   scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   geom_smooth(method = lm) +
   labs(
-    x = "Date", title = "Change over Time in PM 10 Levels in Delhi and Dhaka",
+    x = "Date", title = "PM 10 Trend in Delhi and Dhaka (2003-2023)",
     colour = "Locations")
   
 #O3
-  ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
+ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) + 
   geom_line() +
     theme_classic() +
+    scale_color_manual(values = c("Delhi" = "#1abc9c", "Dhaka" = "purple")) +
+    theme(legend.background = element_rect(colour = "black", fill = "white",
+    linewidth = 0.5)) +
   scale_x_date(date_breaks = "5 years", date_labels = "%Y") +
   geom_smooth(method = lm) +
   labs(
-    x = "Date", title = "Change over Time in Ozone Levels in Delhi and Dhaka",
+    x = "Date", title = "Ozone (O3) Trend in Delhi and Dhaka (2003-2023)",
     colour = "Locations")
   
 ```
