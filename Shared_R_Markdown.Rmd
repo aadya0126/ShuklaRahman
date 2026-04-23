@@ -257,6 +257,19 @@ ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) +
 ```
 
 ## Discussion
+
+### 6.1 Hypothesis 1: Seasonal Component and Long-Term Trend
+Both cities showed a strong and reliable seasonal pollution cycle every single year, with winter peaks and monsoon troughs. This pattern is well documented in the South Asian air quality literature and comes down to temperature inversions, low wind speeds, and crop burning in the dry season, all of which trap pollutants close to the surface (Begum et al., 2018; Ditta et al., 2026).
+Finding statistically significant long-term trends was harder. Only Dhaka O3 and Delhi PM2.5 passed the significance threshold, and for Delhi this only happened after removing seasonal variation. The visual decline in Delhi's particulate pollution that is so obvious in the line plots did not reach statistical significance for AQI or PM10 under the Mann-Kendall framework. This is most likely because the decline has not been steady and consistent enough across all months and all years for the test to pick it up over a 20-year window with the variability present in this data.
+
+### 6.2 Hypothesis 2: Delhi's Air Quality is Significantly Worse than Dhaka's
+For particulate pollution, this hypothesis was clearly supported. Delhi's mean AQI, PM2.5, and PM10 were all significantly higher than Dhaka's, which lines up with existing research identifying Delhi as one of the most polluted cities in South Asia (Singh et al., 2023).
+The ozone result was more surprising. Dhaka had significantly higher mean O3 than Delhi for the entire study period, which goes against the expectation that Delhi would be worse across the board. Ozone behaves differently from particulate matter because it is not emitted directly but forms through photochemical reactions in the atmosphere. The elevated ozone in Dhaka, along with the unusual step change around 2007 to 2008, may reflect either a shift in monitoring methodology or a real change in photochemical activity following fuel regulation changes in Bangladesh during that time. Either way, it is a finding worth investigating further.
+
+### 6.3 Hypothesis 3: Delhi is Improving More Rapidly than Dhaka
+The regression results gave the clearest answer here. The significant interaction terms confirmed that the two cities are moving in different directions for every pollutant. Delhi is improving for particulate pollution while Dhaka is getting worse, and the PM10 lines have already crossed, meaning Dhaka now has higher PM10 than Delhi. For ozone, the opposite is true, with Delhi getting worse and Dhaka slowly improving.
+The most likely explanation for these diverging trajectories is policy. India has introduced stricter vehicle emissions standards, expanded Delhi's metro rail network, and launched the National Clean Air Programme targeting measurable reductions in particulate matter (Garg et al., 2022). Dhaka, on the other hand, is dealing with rapid urbanization, a rapidly growing vehicle fleet, and thousands of brick kilns, all of which have more than cancelled out the early gains from banning two-stroke engines in the early 2000s (State of Global Air, n.d.). Bangladesh's National Air Quality Management Plan 2024 to 2030 is a promising step forward, but the data from this study suggest the situation continued to worsen throughout the entire study period (World Bank, 2022).
+
 ## Limitations
 ## Conclusion
 ## References
