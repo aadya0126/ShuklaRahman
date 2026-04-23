@@ -144,6 +144,21 @@ str(combined_dataset)
 #colSums(is.na(combined_dataset))
 ```
 
+### Visualization
+
+To get an initial sense of how pollution has changed over time in each city, we plotted monthly trends for all four pollutants using ggplot2. Both cities were displayed on the same graph, with a linear trend line added using geom_smooth(method = lm) to highlight the overall direction of change across the 20-year study period.
+
+### Time Series
+
+We built monthly time series objects for each pollutant and each city using the ts() function, starting in January 2003 with a frequency of 12. Each series was then decomposed using Seasonal and Trend decomposition using Loess (STL) via the stl() function with s.window = "periodic". STL breaks each time series into three components: a seasonal cycle, a long-term trend, and a remainder. This was particularly useful for our analysis because air pollution in both cities follows a strong annual seasonal pattern, and we needed to isolate the underlying long-term trend from that recurring noise to address Hypothesis 1.
+
+### Trend Analysis
+
+To test whether pollution levels were changing significantly over time, we ran both seasonal and non-seasonal Mann-Kendall tests for each pollutant in each city. We used the Seasonal Mann-Kendall test (smk.test() from the trend package) as our primary test because it is designed for data with seasonal patterns. It compares each month only to the same month in other years, which avoids confounding the trend with seasonal variation. We also ran the non-seasonal Mann-Kendall test (MannKendall() from the Kendall package) on the de-seasonalized series, which we obtained by subtracting the seasonal component from the STL decomposition. Comparing the two sets of results helped us confirm whether any detected trends were robust.
+
+### Comparative Analysis
+
+To compare air quality between the two cities, we used two complementary approaches. First, we ran two-sample t-tests for each pollutant to test whether mean pollution levels over the full study period were significantly different between Delhi and Dhaka, addressing Hypothesis 2. Second, we fitted linear regression models with an interaction term between time and location for each pollutant, using the formula lm(pollutant ~ first.month * Location). The interaction term first.month:LocationDhaka was the key result we were looking for. A significant interaction would mean that the two cities were changing at statistically different rates over time, directly addressing Hypothesis 3.
 
 
 ```{r Checking for normality AQI}
