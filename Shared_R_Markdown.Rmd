@@ -18,11 +18,11 @@ Air pollution is one of the most pressing environmental and public health challe
 While prior studies have individually examined air quality trends in Delhi (Garg et al., 2022; Singh et al., 2023) and Dhaka (Islam et al., 2021; Begum & Hopke, 2018), long-term comparative analyses spanning both cities remain limited. This project addresses that gap by using 20 years of monthly air quality data (2003 to 2023) to compare air quality trends in PM2.5, PM10, ozone (O3), and AQI across both cities.
 This study addresses the following hypotheses:
 
-$H_1$: Air quality in Delhi and Dhaka exhibits a statistically significant seasonal trend over the 2003–2023 study period.
+$H_1$: Air quality in Delhi and Dhaka exhibits a significant seasonal pattern over the 2003–2023 period.
 
-$H_2$: Air quality in Delhi and Dhaka exhibits a statistically significant long-term decreasing trend over the 2003–2023 study period.
+$H_2$: Air quality trends in Delhi and Dhaka are significantly different over the 2003–2023 study period.
 
-$H_3$: Delhi's air quality is significantly worse than Dhaka's, as measured by mean concentrations of PM2.5, PM10, O3, and AQI over the 2003–2023 study period.
+$H_3$: Mean air pollution levels differ significantly between Delhi and Dhaka across pollutants (PM2.5, PM10, O3, and AQI).
 
 ## Data description
 
@@ -380,6 +380,10 @@ O3.model <- lm(O3 ~ first.month * Location, data = combined_dataset)
 
 ## Results
 
+### Descriptive Trends
+Monthly trends showed contrasting trajectories between Delhi and Dhaka. At the beginning of the study period, from 2003, Delhi had a substantially higher AQI and particulate pollution but showed a clear decline over time, after the mid 2000s. In contrast, Dhaka showed a gradual increase in AQI, PM 2.5, and PM 10, resulting in convergence in air quality values between the two cities in recent years (Figures 1-3).
+Ozone, however, followed a different pattern. Dhaka demonstrated a consistently higher concentration of ozone and a decline over time, whereas Delhi showed relatively stable ozone levels with a slight increase in recent years (Figure 4).
+
 ```{r fig.cap = "Monthly AQI Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
 
 ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) + 
@@ -397,6 +401,7 @@ ggplot(combined_dataset, aes(y = AQI, x = first.month, colour = Location)) +
     colour = "Locations")
 
 ```
+
 
 ```{r fig.cap = "Monthly PM 2.5 Trend from 2003-2023", echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -452,11 +457,16 @@ ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) +
 
 ```
 
-```{r fig.cap = "Decomposition of Delhi's AQI Time Series (2003-2023)", echo=FALSE, message=FALSE, warning=FALSE}
+\newpage
+### Time Series Decomposition
+
+The time series decomposition revealed a strong and consistent seasonality in both cities, with recurring peaks likely corresponding to winter pollution periods (Figures 5-6). Dhaka showed a more regular seasonal pattern while Delhi showed a much higher variability in the remainder component. The trend components broadly aligned with the patterns observed in the initial visualization, with declining particulate pollution in Delhi and increasing trends in Dhaka.
+
+```{r fig.pos="!h", fig.cap = "Decomposition of Delhi's AQI Time Series (2003-2023)", echo=FALSE, message=FALSE, warning=FALSE}
 plot(Delhi.AQI.monthly.decomposed)
 ```
 
-```{r fig.cap = "Decomposition of Dhaka's AQI Time Series (2003-2023)", echo=FALSE, message=FALSE, warning=FALSE}
+```{r fig.pos="!h", fig.cap = "Decomposition of Dhaka's AQI Time Series (2003-2023)", echo=FALSE, message=FALSE, warning=FALSE}
 plot(Dhaka.AQI.monthly.decomposed)
 ```
 
@@ -507,6 +517,11 @@ qqnorm(combined_dataset$O3[combined_dataset$Location == "Dhaka"],
 qqline(combined_dataset$O3[combined_dataset$Location == "Dhaka"],
        col = "blue")
 ```
+\newpage
+### Trend Analysis
+
+The quantile–quantile plots showed that pollutant distributions deviate from normality in both cities, with stronger skewness and heavier tails observed in Delhi.
+The Mann-Kendall tests provided limited evidence of statistically significant trends (Table 1). Dhaka's ozone showed a strong decreasing trend (p < 0.0001) while Delhi's PM 2.5 showed to be significant only after the seasonal component was removed (p = 0.033). The other pollutant-location combinations were not statistically significant, indicating that the variability could have obscured any consistent long-term trends.
 
 Table: Summary of Mann-Kendall Results
 
@@ -521,7 +536,11 @@ Delhi | PM 2.5 | 0.0862 | **0.0330** | -197
 Delhi | PM 10 | 0.4257 | 0.1409 | -92
 Delhi | O3 | 0.3098 | 0.4421 | 117
 
-Table: Summary of two sample t-test Results
+### Comparative Analysis
+
+The two-sample t-tests showed significant differences in the mean pollution levels between the cities (Table 2). Delhi had a significantly higher mean AQI, PM 2.5, and PM 10, while Dhaka had significantly higher mean ozone concentrations (all p < 0.001).
+
+Table: Summary of Two Sample T-test Results
 
 Variable | p-value | Dhaka mean | Delhi mean
 :---: | :---: | :---: |:---: 
@@ -529,6 +548,10 @@ AQI | **2.2e-16** | 170.35 | 275.71
 PM2.5 | **2.2e-16**  | 100.21 | 240.54
 PM10 | **2.2e-16**  | 169.18 | 242.17
 O3| **2.2e-16**  | 50.87 | 31.78
+
+### Regression Analysis
+
+The linear regression models showed that pollution trends differ significantly between Delhi and Dhaka for all pollutants (p < 0.001). For AQI, PM 2.5, and PM 10, Delhi showed a declining trend while Dhaka showed an increasing trend, consistent with the previously observed convergence over time. The model fit was strongest for PM 2.5 ($R^2$ = 0.894) and AQI ($R^2$ = 0.812), and weaker for ozone ($R^2$ = 0.424) (Table 3).
 
 Table: Summary of Linear Regression Results
 
@@ -541,22 +564,70 @@ O3 | **2.2e-16** | -30.487 | -4.640 | 32.740 | 0.424
 
 ## Discussion
 
-### Hypothesis 1: Does Air Quality Have a Significant Seasonal Component and Decreasing Trend?
-The STL decomposition answered the seasonal part clearly. Both cities show strong, predictable annual cycles, with pollution peaking every winter and dropping during the monsoon without fail. This is expected given the Indo-Gangetic Plain's meteorology, where cold dry winters trap pollutants near the surface and monsoon rains wash them out (Begum et al., 2018; Ditta et al., 2026).
+### Hypothesis 1: Seasonal patterns and long-term trends
+Time series decomposition clearly showed strong and consistent seasonal patterns in both cities, with pollution peaking during winter months and declining during the monsoon. This aligns with known meteorological drivers along the Indo-Gangetic Plain, such as winter temperature inversions and reduced atmospheric mixing which are known to trap pollutants near the surface, while monsoon rainfall improves atmospheric quality. Seasonal emission sources, including agricultural crop burning and festival-related activities such as Diwali, likely further contribute to elevated winter pollution levels.
 
-Finding a statistically significant decreasing trend was harder. The Mann-Kendall tests only confirmed significant declines in two out of eight combinations. Dhaka O3 was the clearest result, with both tests agreeing on a highly significant decline. Delhi PM2.5 only crossed the significance threshold after removing the seasonal component, suggesting the decline is real but gets partially buried in seasonal noise. Everything else came back non-significant. This does not mean pollution is not changing as Delhi's particulate decline is visually obvious, but it does mean the changes have not been consistent enough across all months and years to be statistically confirmed. That distinction between a visible trend and a statistically significant one is important when interpreting these results.
+Evidence for long-term trends is more mixed. While visual trends suggested declining particulate pollution in Delhi and increasing levels in Dhaka, Mann–Kendall tests detect statistically significant changes in only a subset of the pollutants. This suggests that high variability and strong seasonality may be obscuring consistent long-term trends, even when directional changes are visually apparent.
 
-### Hypothesis 2: Is Delhi's Air Quality Significantly Worse than Dhaka's?
-For particulate pollution, yes. Delhi's mean AQI, PM2.5, and PM10 were all significantly higher than Dhaka's across the full study period (p < 2.2e-16 for all three), which is consistent with Delhi's reputation as one of the most polluted cities in South Asia (Singh et al., 2023).
-Ozone flipped this result entirely. Dhaka had significantly higher mean O3 than Delhi, which goes against the expectation that Delhi would simply be worse across the board. Unlike particulate matter, ozone forms through photochemical reactions rather than direct emissions, so the two cities having different ozone profiles is not necessarily contradictory. Dhaka's consistently higher ozone, combined with the unusual jump in values around 2007 to 2008, suggests either a change in monitoring methodology or a genuine shift in photochemical activity following fuel regulation changes in Bangladesh. Either way, it is a finding worth investigating further and it shows that framing Delhi as simply more polluted than Dhaka is an oversimplification.
+### Hypothesis 2: Differences in air quality between cities
+Delhi showed significantly higher mean AQI, PM2.5, and PM10 concentrations than Dhaka, confirming that particulate pollution has historically been more severe in Delhi. However, ozone showed the opposite pattern, with higher concentrations in Dhaka. This may be reflecting fundamental differences in how these pollutants are formed, as ozone is more of a secondary pollutant, driven by photochemical processes rather than direct emissions.
+
+These findings highlight that overall air quality comparisons depend on pollutant type, and that framing one city as uniformly “more polluted” may be oversimplifying the underlying dynamics.
 
 ### Hypothesis 3: Is Delhi's Air Quality Decreasing More Rapidly than Dhaka's?
-The linear regression gave the clearest answer here. The interaction term between time and location was significant in all four models, confirming that the two cities are changing at statistically different rates for every pollutant. For AQI, PM2.5, and PM10, Delhi was declining while Dhaka was increasing. The models fit this pattern well, particularly for PM2.5 (R squared = 0.89) and AQI (R squared = 0.81), giving us confidence that time and location together genuinely explain most of the variation in particulate pollution. PM10 fit moderately (R squared = 0.63) and O3 fit less well (R squared = 0.43), which makes sense given how much more complex ozone formation is compared to direct particulate emissions.
-For O3, the roles reversed. Delhi's ozone was rising while Dhaka's was declining, and both the regression interaction term and the Mann-Kendall tests told the same consistent story. So to directly answer Hypothesis 3: yes, Delhi's particulate pollution is decreasing more rapidly than Dhaka's, and the gap has been narrowing throughout the study period. The PM10 lines have already crossed.
-All three analyses point to the same conclusion. Delhi and Dhaka are converging from opposite directions for particulate pollution. Delhi started far worse but its policy interventions, including stricter vehicle emissions standards, metro rail expansion, and the National Clean Air Programme, appear to have made a real difference (Garg et al., 2022). Dhaka, despite early gains from banning two-stroke engines, has seen particulate pollution worsen steadily as urbanization, vehicle growth, and brick kiln proliferation have outpaced regulatory capacity (State of Global Air, n.d.). If these trends continue, Dhaka is on track to approach Delhi level particulate pollution within the coming decades, and Bangladesh's National Air Quality Management Plan 2024 to 2030 will need to deliver meaningful results to change that trajectory (World Bank, 2022).
-Dhaka is the significant decline in ozone confirmed by both the Mann-Kendall tests and the regression model. However, given the unusual data patterns in both cities' O3 series, those results deserve some caution and would benefit from validation against independent monitoring sources.
+Results from the regression analyses indicated that pollution trends differ significantly between the two cities. For AQI and particulate matter, Delhi showed declining trends while Dhaka showed increasing trends, resulting in convergence over time. This pattern was consistent across both visual and statistical analyses.
 
+These opposing trajectories are consistent with differences in policy and development between the two cities. Delhi’s decline may reflect the impact of emissions controls and air quality policies, while Dhaka’s increases likely reflect rapid urbanization and industrial growth. However, these interpretations are associative rather than causal and should be taken with caution.
 
 ## Limitations
+
+This study had several limitations.
+
+1. The time-series nature of the data violates the independence assumption of standard statistical tests, which may have affected the reliability of the p-values we obtained from the t-tests and linear regression models.
+
+2. Aggregating hourly data into monthly averages may have also masked short-term pollution extremes and reduced variability.
+
+3. Differences in data sources and preprocessing methods between Delhi and Dhaka, including the imputation in the Delhi dataset, affected comparability of the two datasets.
+
+4. Simple linear regression models, as attempted here, do not account for seasonality or non-linear dynamics in pollution trends.
+
+5. The irregular patterns observed in ozone data suggest that there may have been potential measurement inconsistencies that require cautious interpretation of our results.
+
+6. Pollutant distributions were skewed, particularly in Delhi, which may have influenced the statistical estimates and increased sensitivity to extreme values.
+
 ## Conclusion
+
+This study demonstrates that while Delhi historically experienced substantially higher particulate pollution than Dhaka, its air quality has improved over time, whereas Dhaka’s has worsened. As a result, the gap between the two cities has narrowed, with evidence of convergence in particulate pollution levels.
+
+Ozone trends diverge from this pattern, with higher concentrations in Dhaka and differing temporal dynamics between the cities. Overall, these findings suggest that policy interventions in Delhi may be associated with improvements in air quality, while rapid urbanization in Dhaka has offset earlier gains.
+
+Future work should incorporate more advanced time-series methods and additional cities to better understand regional pollution dynamics and strengthen causal inference.
+
 ## References
+
+1.      Ditta, A. A., Yu, C. W. F., Wang, J., & Cao, S. J. (2026). 
+Air pollution's toll on health and security in South Asia. Indoor and Built Environment.
+https://doi.org/10.1177/1420326X251394135
+2.      Begum, B. A., & Hopke, P. K. (2018).
+Ambient air quality in Dhaka Bangladesh over two decades: Impacts of policy on air quality.
+Aerosol and Air Quality Research, 18(8), 1910–1920.
+https://doi.org/10.4209/aaqr.2017.11.0465
+3.      Garg, S., Chandra, B. P., Sinha, V., & Sinha, B. (2022).
+Evolution of India's PM2.5 pollution between 1998 and 2020 using global reanalysis
+fields coupled with satellite observations and fuel consumption patterns.
+Environmental Science: Atmospheres, 2(4), 731–751.
+https://doi.org/10.1039/D2EA00027J
+4.      State of Global Air. (n.d.). South Asia regional snapshot on air quality.
+Health Effects Institute.
+https://www.stateofglobalair.org/resources/factsheet/south-asia-regional-snapshot-air-quality
+5.      Singh, A., Bhaskaran, P. K., & Roy, S. (2023).
+Assessment of spatio-temporal variations in PM2.5 and health impacts in South Asian cities.
+Remote Sensing, 15(19), Article 4975.
+https://doi.org/10.3390/rs15194975
+6.      Islam, M. M., Shammi, M., & Bodrud-Doza, M. (2021).
+Long-term (2003–2019) air quality, climate variables, and human health consequences
+in Dhaka, Bangladesh. Frontiers in Sustainable Cities, 3, Article 681759.
+https://doi.org/10.3389/frsc.2021.681759
+
+## Github Link
+https://github.com/aadya0126/ShuklaRahman
