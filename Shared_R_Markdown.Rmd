@@ -15,8 +15,8 @@ toc: true
 ## Introduction
 Air pollution is one of the most pressing environmental and public health challenges of the 21st century, particularly across South Asia, where rapid urbanization, industrial growth, vehicular emissions, and agricultural waste burning have made several cities among the most polluted in the world (Ditta et al., 2026). Delhi, the capital of India, and Dhaka, the capital of Bangladesh, are two such megacities that consistently rank among the worst for air quality globally, with both cities experiencing severe seasonal pollution cycles driven by winter temperature inversions, stubble burning, brick kilns, and vehicle emissions along the shared Indo-Gangetic Plain (Ditta et al., 2026; Begum et al., 2018). Despite their geographic proximity and shared pollution sources, the two cities have followed divergent regulatory paths. India launched its National Clean Air Programme in 2019 targeting significant reductions in particulate matter (Garg et al., 2022), while Bangladesh was among the first South Asian nations to ban two-stroke engine vehicles in the early 2000s and transition to CNG-powered alternatives (State of Global Air, n.d.), raising important questions about whether these differing policy trajectories have translated into meaningfully different pollution trends over time.
 
-While prior studies have individually examined air quality trends in Delhi (Garg et al., 2022; Singh et al., 2023) and Dhaka (Islam et al., 2021; Begum & Hopke, 2018), long-term comparative analyses spanning both cities remain limited. This project addresses that gap by using 20 years of monthly air quality data (2003 to 2023) to compare air quality trends in PM2.5, PM10, ozone (O3), and AQI across both cities, testing whether there is a significant seasonal component or decreasing trend, whether Delhi's pollution is significantly worse than Dhaka's, and whether the two cities are improving at statistically different rates.
-Thus, this study addresses the following hypotheses:
+While prior studies have individually examined air quality trends in Delhi (Garg et al., 2022; Singh et al., 2023) and Dhaka (Islam et al., 2021; Begum & Hopke, 2018), long-term comparative analyses spanning both cities remain limited. This project addresses that gap by using 20 years of monthly air quality data (2003 to 2023) to compare air quality trends in PM2.5, PM10, ozone (O3), and AQI across both cities.
+This study addresses the following hypotheses:
 
 $H_1$: Air quality in Delhi and Dhaka exhibits a statistically significant seasonal trend over the 2003–2023 study period.
 
@@ -36,7 +36,9 @@ The Delhi air quality data was sourced from the Processed Delhi Air Quality and 
 
 ### Initial Data Wrangling
 
-Both datasets were cleaned and processed separately before being combined for analysis. For the Dhaka dataset, we filtered the to retain only observations from Dhaka city. For both datasets, the datetime columns were converted into a proper R datetime object using the ymd_hms function and only the columns needed for analysis were selected: Location, Month, Year, PM2.5, PM10, O3, and AQI. Both datasets were filtered to January 1, 2003 through December 31, 2023. We chose this window because the Dhaka dataset spans a longer date range from 2000 to 2025 and the Delhi dataset does not have complete monthly records for 2000 and 2024. To keep the data consistent and comparable across both cities, we focused on a clean 20-year trend. Hourly observations for both datasets were aggregated into monthly averages for all four pollutants (AQI, PM 2.5, PM 10, and O3) using na.rm = TRUE to handle any missing values. A Location variable was added to each dataset before merging and the two datasets were combined using rbind. A date column marking the first day of each month was created using make_date for use in visualizations and regression analyses. The final combined dataset contained 504 monthly observations over 8 columns (see below).
+Both datasets were cleaned and processed separately before being combined for analysis.
+The Dhaka dataset was filtered to retain only observations from Dhaka city. For both datasets, the datetime columns were converted into a proper R datetime object using the ymd_hms function and only the columns needed for analysis were selected: Location, Month, Year, PM2.5, PM10, O3, and AQI. Both datasets were filtered to January 1, 2003 through December 31, 2023. We chose this window because the Dhaka dataset spans a longer date range from 2000 to 2025 and the Delhi dataset does not have complete monthly records for 2000 and 2024. To keep the data consistent and comparable across both cities, we focused on a clean 20-year trend.
+Hourly observations for both datasets were aggregated into monthly averages for all four pollutants (AQI, PM 2.5, PM 10, and O3) using na.rm = TRUE to handle any missing values. A Location variable was added to each dataset before using rbind to combine the two datasets. A date column marking the first day of each month was created using make_date for use in visualizations and regression analyses. The final combined dataset contained 504 average monthly observations over 8 columns (see below).
 
 
 ```{r Loading packages, checking working directory, message=FALSE, warning=FALSE, echo=FALSE}
@@ -146,55 +148,234 @@ str(combined_dataset)
 
 ### Visualization
 
-To get an initial sense of how pollution has changed over time in each city, we plotted monthly trends for all four pollutants using ggplot2. Both cities were displayed on the same graph, with a linear trend line added using geom_smooth(method = lm) to highlight the overall direction of change across the 20-year study period.
+To get an initial sense of how pollution has changed over time in each city, we plotted monthly trends for all four pollutants. Both cities were displayed on the same graph with a linear trend line to highlight the overall direction of change across the 20-year study period.
 
 ### Time Series
 
-We built monthly time series objects for each pollutant and each city using the ts() function, starting in January 2003 with a frequency of 12. Each series was then decomposed using Seasonal and Trend decomposition using Loess (STL) via the stl() function with s.window = "periodic". STL breaks each time series into three components: a seasonal cycle, a long-term trend, and a remainder. This was particularly useful for our analysis because air pollution in both cities follows a strong annual seasonal pattern, and we needed to isolate the underlying long-term trend from that recurring noise to address Hypothesis 1.
+We built monthly time series objects for each pollutant and each city. Each series was then decomposed into the seasonal, long-term trend, and remainder components. 
+
+```{r Creating time series objects, message=FALSE, warning=FALSE, echo=FALSE}
+# Monthly AQI for Delhi
+Delhi.AQI.monthly.ts <- ts(delhi_final_processed$AQI,
+                           start = c(2003,1), frequency = 12)
+Delhi.AQI.monthly.decomposed <- stl(Delhi.AQI.monthly.ts,
+                                    s.window = "periodic")
+
+# Monthly Ozone for Delhi
+Delhi.Ozone.monthly.ts <- ts(delhi_final_processed$O3,
+                             start = c(2003,1), frequency = 12)
+Delhi.Ozone.monthly.decomposed <- stl(Delhi.Ozone.monthly.ts,
+                                    s.window = "periodic")
+
+# Monthly PM2.5 for Delhi
+Delhi.PM2.5.monthly.ts <- ts(delhi_final_processed$PM2.5,
+                             start = c(2003,1), frequency = 12)
+Delhi.PM2.5.monthly.decomposed <- stl(Delhi.PM2.5.monthly.ts,
+                                    s.window = "periodic")
+
+# Monthly PM10 for Delhi
+Delhi.PM10.monthly.ts <- ts(delhi_final_processed$PM10,
+                            start = c(2003,1), frequency = 12)
+Delhi.PM10.monthly.decomposed <- stl(Delhi.PM10.monthly.ts,
+                                    s.window = "periodic")
+
+# Monthly AQI for Dhaka
+Dhaka.AQI.monthly.ts <- ts(dhaka_final_processed$AQI,
+                           start = c(2003,1), frequency = 12)
+Dhaka.AQI.monthly.decomposed <- stl(Dhaka.AQI.monthly.ts,
+                                    s.window = "periodic")
+
+# Monthly Ozone for Dhaka
+Dhaka.Ozone.monthly.ts <- ts(dhaka_final_processed$O3,
+                             start = c(2003,1), frequency = 12)
+Dhaka.Ozone.monthly.decomposed <- stl(Dhaka.Ozone.monthly.ts,
+                                    s.window = "periodic")
+
+# Monthly PM2.5 for Dhaka
+Dhaka.PM2.5.monthly.ts <- ts(dhaka_final_processed$PM2.5,
+                             start = c(2003,1), frequency = 12)
+Dhaka.PM2.5.monthly.decomposed <- stl(Dhaka.PM2.5.monthly.ts,
+                                    s.window = "periodic")
+
+# Monthly PM10 for Dhaka
+Dhaka.PM10.monthly.ts <- ts(dhaka_final_processed$PM10,
+                            start = c(2003,1), frequency = 12)
+Dhaka.PM10.monthly.decomposed <- stl(Dhaka.PM10.monthly.ts,
+                                    s.window = "periodic")
+
+```
 
 ### Trend Analysis
 
-To test whether pollution levels were changing significantly over time, we ran both seasonal and non-seasonal Mann-Kendall tests for each pollutant in each city. We used the Seasonal Mann-Kendall test (smk.test() from the trend package) as our primary test because it is designed for data with seasonal patterns. It compares each month only to the same month in other years, which avoids confounding the trend with seasonal variation. We also ran the non-seasonal Mann-Kendall test (MannKendall() from the Kendall package) on the de-seasonalized series, which we obtained by subtracting the seasonal component from the STL decomposition. Comparing the two sets of results helped us confirm whether any detected trends were robust.
+To test whether pollution levels were changing significantly over time, we ran both seasonal and non-seasonal Mann-Kendall tests for each pollutant in each city. We chose to run both because the initial graphs suggested a more likely seasonal trend in Dhaka's air quality with weaker seasonality in Delhi's air quality. The non-seasonal Mann-Kendall test was run on the de-seasonalized series, obtained by subtracting the seasonal component from the STL decomposition.
+
+```{r Mann-Kendall Tests, message=FALSE, warning=FALSE, echo=FALSE}
+
+# Seasonal Mann-Kendall Dhaka
+
+# Dhaka AQI
+Dhaka.AQI.monthly.trend <- trend::smk.test(Dhaka.AQI.monthly.ts)
+#Dhaka.AQI.monthly.trend
+#summary(Dhaka.AQI.monthly.trend)
+
+# Dhaka PM2.5
+Dhaka.PM2.5.monthly.trend <- trend::smk.test(Dhaka.PM2.5.monthly.ts)
+#Dhaka.PM2.5.monthly.trend
+#summary(Dhaka.PM2.5.monthly.trend)
+
+# Dhaka PM10
+Dhaka.PM10.monthly.trend <- trend::smk.test(Dhaka.PM10.monthly.ts)
+#Dhaka.PM10.monthly.trend
+#summary(Dhaka.PM10.monthly.trend)
+
+# Dhaka O3
+Dhaka.Ozone.monthly.trend <- trend::smk.test(Dhaka.Ozone.monthly.ts)
+#Dhaka.Ozone.monthly.trend
+#summary(Dhaka.Ozone.monthly.trend)
+
+# Seasonal Mann-Kendall Delhi
+
+# Delhi AQI
+Delhi.AQI.monthly.trend <- trend::smk.test(Delhi.AQI.monthly.ts)
+#Delhi.AQI.monthly.trend
+#summary(Delhi.AQI.monthly.trend)
+
+# Delhi PM2.5
+Delhi.PM2.5.monthly.trend <- trend::smk.test(Delhi.PM2.5.monthly.ts)
+#Delhi.PM2.5.monthly.trend
+#summary(Delhi.PM2.5.monthly.trend)
+
+# Delhi PM10
+Delhi.PM10.monthly.trend <- trend::smk.test(Delhi.PM10.monthly.ts)
+#Delhi.PM10.monthly.trend
+#summary(Delhi.PM10.monthly.trend)
+
+# Delhi O3
+Delhi.Ozone.monthly.trend <- trend::smk.test(Delhi.Ozone.monthly.ts)
+#Delhi.Ozone.monthly.trend
+#summary(Delhi.Ozone.monthly.trend)
+
+```
+
+```{r Non-Seasonal Mann-Kendall Tests, message=FALSE, warning=FALSE, echo=FALSE}
+
+# Non-Seasonal Mann-Kendall Dhaka
+
+# Dhaka AQI
+Dhaka.monthly.AQI.nonseasonal <- Dhaka.AQI.monthly.ts - 
+  Dhaka.AQI.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.AQI.trend <- Kendall::MannKendall(
+  Dhaka.monthly.AQI.nonseasonal)
+#Dhaka.nonseasonal.AQI.trend
+#summary(Dhaka.nonseasonal.AQI.trend)
+
+# Dhaka PM2.5
+Dhaka.monthly.PM2.5.nonseasonal <- Dhaka.PM2.5.monthly.ts - 
+  Dhaka.PM2.5.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.PM2.5.trend <- Kendall::MannKendall(
+  Dhaka.monthly.PM2.5.nonseasonal)
+#Dhaka.nonseasonal.PM2.5.trend
+#summary(Dhaka.nonseasonal.PM2.5.trend)
+
+# Dhaka PM10
+Dhaka.monthly.PM10.nonseasonal <- Dhaka.PM10.monthly.ts - 
+  Dhaka.PM10.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.PM10.trend <- Kendall::MannKendall(
+  Dhaka.monthly.PM10.nonseasonal)
+#Dhaka.nonseasonal.PM10.trend
+#summary(Dhaka.nonseasonal.PM10.trend)
+
+# Dhaka O3
+Dhaka.monthly.Ozone.nonseasonal <- Dhaka.Ozone.monthly.ts - 
+  Dhaka.Ozone.monthly.decomposed$time.series[,1]
+
+Dhaka.nonseasonal.Ozone.trend <- Kendall::MannKendall(
+  Dhaka.monthly.Ozone.nonseasonal)
+#Dhaka.nonseasonal.Ozone.trend
+#summary(Dhaka.nonseasonal.Ozone.trend)
+
+# Non-Seasonal Mann-Kendall Delhi
+
+# Delhi AQI
+Delhi.monthly.AQI.nonseasonal <- Delhi.AQI.monthly.ts - 
+  Delhi.AQI.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.AQI.trend <- Kendall::MannKendall(
+  Delhi.monthly.AQI.nonseasonal)
+#Delhi.nonseasonal.AQI.trend
+#summary(Delhi.nonseasonal.AQI.trend)
+
+# Delhi PM2.5
+Delhi.monthly.PM2.5.nonseasonal <- Delhi.PM2.5.monthly.ts - 
+  Delhi.PM2.5.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.PM2.5.trend <- Kendall::MannKendall(
+  Delhi.monthly.PM2.5.nonseasonal)
+#Delhi.nonseasonal.PM2.5.trend
+#summary(Delhi.nonseasonal.PM2.5.trend)
+
+# Delhi PM10
+Delhi.monthly.PM10.nonseasonal <- Delhi.PM10.monthly.ts - 
+  Delhi.PM10.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.PM10.trend <- Kendall::MannKendall(
+  Delhi.monthly.PM10.nonseasonal)
+#Delhi.nonseasonal.PM10.trend
+#summary(Delhi.nonseasonal.PM10.trend)
+
+# Delhi O3
+Delhi.monthly.Ozone.nonseasonal <- Delhi.Ozone.monthly.ts - 
+  Delhi.Ozone.monthly.decomposed$time.series[,1]
+
+Delhi.nonseasonal.Ozone.trend <- Kendall::MannKendall(
+  Delhi.monthly.Ozone.nonseasonal)
+#Delhi.nonseasonal.Ozone.trend
+#summary(Delhi.nonseasonal.Ozone.trend)
+
+```
 
 ### Comparative Analysis
 
-To compare air quality between the two cities, we used two complementary approaches. First, we ran two-sample t-tests for each pollutant to test whether mean pollution levels over the full study period were significantly different between Delhi and Dhaka, addressing Hypothesis 2. Second, we fitted linear regression models with an interaction term between time and location for each pollutant, using the formula lm(pollutant ~ first.month * Location). The interaction term first.month:LocationDhaka was the key result we were looking for. A significant interaction would mean that the two cities were changing at statistically different rates over time, directly addressing Hypothesis 3.
+Before running any comparative analyses, we had to check if our data was normally distributed. For this, we generated some qq plots for all four variables for each city. Then, to compare the air quality between the two cities, we used two approaches. First, we ran two-sample t-tests for each pollutant to test whether mean pollution levels over the full study period were significantly different between Delhi and Dhaka. Second, we fitted linear regression models with an interaction term between time and location for each pollutant, using the formula lm(pollutant ~ first.month * Location).
 
+```{r two-sample t tests, message=FALSE, warning=FALSE, echo=FALSE}
 
-```{r Checking for normality AQI}
-par(mfrow = c(1, 2))
-qqnorm(combined_dataset$AQI[combined_dataset$Location == "Delhi"],
-       main = "Delhi AQI")
-qqline(combined_dataset$AQI[combined_dataset$Location == "Delhi"],
-       col = "blue")
-qqnorm(combined_dataset$AQI[combined_dataset$Location == "Dhaka"],
-       main = "Dhaka AQI")
-qqline(combined_dataset$AQI[combined_dataset$Location == "Dhaka"],
-       col = "blue")
+# AQI
+#t.test(AQI ~ Location, data = combined_dataset)
+
+# PM2.5
+#t.test(PM2.5 ~ Location, data = combined_dataset)
+
+# PM10
+#t.test(PM10 ~ Location, data = combined_dataset)
+
+# O3
+#t.test(O3 ~ Location, data = combined_dataset)
+
 ```
 
-```{r Checking for normality PM 2.5}
-par(mfrow = c(1, 2))
-qqnorm(combined_dataset$PM2.5[combined_dataset$Location == "Delhi"],
-       main = "Delhi PM 2.5")
-qqnorm(combined_dataset$PM2.5[combined_dataset$Location == "Dhaka"],
-       main = "Dhaka PM2.5")
-```
+```{r linear regressions, message=FALSE, warning=FALSE, echo=FALSE}
 
-```{r Checking for normality PM 10}
-par(mfrow = c(1, 2))
-qqnorm(combined_dataset$PM10[combined_dataset$Location == "Delhi"],
-       main = "Delhi PM 10")
-qqnorm(combined_dataset$PM10[combined_dataset$Location == "Dhaka"],
-       main = "Dhaka PM 10")
-```
+#Linear Regression
 
-```{r Checking for normality Ozone}
-par(mfrow = c(1, 2))
-qqnorm(combined_dataset$O3[combined_dataset$Location == "Delhi"],
-       main = "Delhi O3")
-qqnorm(combined_dataset$O3[combined_dataset$Location == "Dhaka"],
-       main = "Dhaka O3")
+# AQI
+AQI.model <- lm(AQI ~ first.month * Location, data = combined_dataset)
+#summary(AQI.model)
+
+# PM2.5
+PM2.5.model <- lm(PM2.5 ~ first.month * Location, data = combined_dataset)
+#summary(PM2.5.model)
+
+# PM10
+PM10.model <- lm(PM10 ~ first.month * Location, data = combined_dataset)
+#summary(PM10.model)
+
+# O3
+O3.model <- lm(O3 ~ first.month * Location, data = combined_dataset)
+#summary(O3.model)
 ```
 
 ## Results
@@ -271,229 +452,60 @@ ggplot(combined_dataset, aes(y = O3, x = first.month, colour = Location)) +
 
 ```
 
-## Discussion
-
-### 6.1 Hypothesis 1: Does Air Quality Have a Significant Seasonal Component and Decreasing Trend?
-The STL decomposition answered the seasonal part clearly. Both cities show strong, predictable annual cycles, with pollution peaking every winter and dropping during the monsoon without fail. This is expected given the Indo-Gangetic Plain's meteorology, where cold dry winters trap pollutants near the surface and monsoon rains wash them out (Begum et al., 2018; Ditta et al., 2026).
-
-Finding a statistically significant decreasing trend was harder. The Mann-Kendall tests only confirmed significant declines in two out of eight combinations. Dhaka O3 was the clearest result, with both tests agreeing on a highly significant decline. Delhi PM2.5 only crossed the significance threshold after removing the seasonal component, suggesting the decline is real but gets partially buried in seasonal noise. Everything else came back non-significant. This does not mean pollution is not changing as Delhi's particulate decline is visually obvious, but it does mean the changes have not been consistent enough across all months and years to be statistically confirmed. That distinction between a visible trend and a statistically significant one is important when interpreting these results.
-
-### 6.2 Hypothesis 2: Is Delhi's Air Quality Significantly Worse than Dhaka's?
-For particulate pollution, yes. Delhi's mean AQI, PM2.5, and PM10 were all significantly higher than Dhaka's across the full study period (p < 2.2e-16 for all three), which is consistent with Delhi's reputation as one of the most polluted cities in South Asia (Singh et al., 2023).
-Ozone flipped this result entirely. Dhaka had significantly higher mean O3 than Delhi, which goes against the expectation that Delhi would simply be worse across the board. Unlike particulate matter, ozone forms through photochemical reactions rather than direct emissions, so the two cities having different ozone profiles is not necessarily contradictory. Dhaka's consistently higher ozone, combined with the unusual jump in values around 2007 to 2008, suggests either a change in monitoring methodology or a genuine shift in photochemical activity following fuel regulation changes in Bangladesh. Either way, it is a finding worth investigating further and it shows that framing Delhi as simply more polluted than Dhaka is an oversimplification.
-
-### 6.3 Hypothesis 3: Is Delhi's Air Quality Decreasing More Rapidly than Dhaka's?
-The linear regression gave the clearest answer here. The interaction term between time and location was significant in all four models, confirming that the two cities are changing at statistically different rates for every pollutant. For AQI, PM2.5, and PM10, Delhi was declining while Dhaka was increasing. The models fit this pattern well, particularly for PM2.5 (R squared = 0.89) and AQI (R squared = 0.81), giving us confidence that time and location together genuinely explain most of the variation in particulate pollution. PM10 fit moderately (R squared = 0.63) and O3 fit less well (R squared = 0.43), which makes sense given how much more complex ozone formation is compared to direct particulate emissions.
-For O3, the roles reversed. Delhi's ozone was rising while Dhaka's was declining, and both the regression interaction term and the Mann-Kendall tests told the same consistent story. So to directly answer Hypothesis 3: yes, Delhi's particulate pollution is decreasing more rapidly than Dhaka's, and the gap has been narrowing throughout the study period. The PM10 lines have already crossed.
-All three analyses point to the same conclusion. Delhi and Dhaka are converging from opposite directions for particulate pollution. Delhi started far worse but its policy interventions, including stricter vehicle emissions standards, metro rail expansion, and the National Clean Air Programme, appear to have made a real difference (Garg et al., 2022). Dhaka, despite early gains from banning two-stroke engines, has seen particulate pollution worsen steadily as urbanization, vehicle growth, and brick kiln proliferation have outpaced regulatory capacity (State of Global Air, n.d.). If these trends continue, Dhaka is on track to approach Delhi level particulate pollution within the coming decades, and Bangladesh's National Air Quality Management Plan 2024 to 2030 will need to deliver meaningful results to change that trajectory (World Bank, 2022).
-Dhaka is the significant decline in ozone confirmed by both the Mann-Kendall tests and the regression model. However, given the unusual data patterns in both cities' O3 series, those results deserve some caution and would benefit from validation against independent monitoring sources.
-
-
-## Limitations
-## Conclusion
-## References
-
-## TIME SERIES ANALYSES
-
-```{r Creating time series objects}
-# Monthly AQI for Delhi
-Delhi.AQI.monthly.ts <- ts(delhi_final_processed$AQI,
-                           start = c(2003,1), frequency = 12)
-Delhi.AQI.monthly.decomposed <- stl(Delhi.AQI.monthly.ts,
-                                    s.window = "periodic")
+```{r fig.cap = "Decomposition of Delhi's AQI Time Series (2003-2023)", echo=FALSE, message=FALSE, warning=FALSE}
 plot(Delhi.AQI.monthly.decomposed)
-
-# Monthly Ozone for Delhi
-Delhi.Ozone.monthly.ts <- ts(delhi_final_processed$O3,
-                             start = c(2003,1), frequency = 12)
-Delhi.Ozone.monthly.decomposed <- stl(Delhi.Ozone.monthly.ts,
-                                    s.window = "periodic")
-plot(Delhi.Ozone.monthly.decomposed)
-
-
-# Monthly PM2.5 for Delhi
-Delhi.PM2.5.monthly.ts <- ts(delhi_final_processed$PM2.5,
-                             start = c(2003,1), frequency = 12)
-Delhi.PM2.5.monthly.decomposed <- stl(Delhi.PM2.5.monthly.ts,
-                                    s.window = "periodic")
-plot(Delhi.PM2.5.monthly.decomposed)
-
-
-# Monthly PM10 for Delhi
-Delhi.PM10.monthly.ts <- ts(delhi_final_processed$PM10,
-                            start = c(2003,1), frequency = 12)
-Delhi.PM10.monthly.decomposed <- stl(Delhi.PM10.monthly.ts,
-                                    s.window = "periodic")
-plot(Delhi.PM10.monthly.decomposed)
-
-
-
-# Monthly AQI for Dhaka
-Dhaka.AQI.monthly.ts <- ts(dhaka_final_processed$AQI,
-                           start = c(2003,1), frequency = 12)
-Dhaka.AQI.monthly.decomposed <- stl(Dhaka.AQI.monthly.ts,
-                                    s.window = "periodic")
-plot(Dhaka.AQI.monthly.decomposed)
-
-
-# Monthly Ozone for Dhaka
-Dhaka.Ozone.monthly.ts <- ts(dhaka_final_processed$O3,
-                             start = c(2003,1), frequency = 12)
-Dhaka.Ozone.monthly.decomposed <- stl(Dhaka.Ozone.monthly.ts,
-                                    s.window = "periodic")
-plot(Dhaka.Ozone.monthly.decomposed)
-
-
-# Monthly PM2.5 for Dhaka
-Dhaka.PM2.5.monthly.ts <- ts(dhaka_final_processed$PM2.5,
-                             start = c(2003,1), frequency = 12)
-Dhaka.PM2.5.monthly.decomposed <- stl(Dhaka.PM2.5.monthly.ts,
-                                    s.window = "periodic")
-plot(Dhaka.PM2.5.monthly.decomposed)
-
-
-# Monthly PM10 for Dhaka
-Dhaka.PM10.monthly.ts <- ts(dhaka_final_processed$PM10,
-                            start = c(2003,1), frequency = 12)
-Dhaka.PM10.monthly.decomposed <- stl(Dhaka.PM10.monthly.ts,
-                                    s.window = "periodic")
-plot(Dhaka.PM10.monthly.decomposed)
-
 ```
 
-```{r Mann-Kendall Tests}
+```{r fig.cap = "Decomposition of Dhaka's AQI Time Series (2003-2023)", echo=FALSE, message=FALSE, warning=FALSE}
+plot(Dhaka.AQI.monthly.decomposed)
+```
 
+```{r Checking for normality AQI, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$AQI[combined_dataset$Location == "Delhi"],
+       main = "Delhi AQI")
+qqline(combined_dataset$AQI[combined_dataset$Location == "Delhi"],
+       col = "blue")
+qqnorm(combined_dataset$AQI[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka AQI")
+qqline(combined_dataset$AQI[combined_dataset$Location == "Dhaka"],
+       col = "blue")
+```
 
-# Seasonal Mann-Kendall Dhaka
+```{r Checking for normality PM 2.5, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$PM2.5[combined_dataset$Location == "Delhi"],
+       main = "Delhi PM 2.5")
+qqline(combined_dataset$PM2.5[combined_dataset$Location == "Delhi"],
+       col = "blue")
+qqnorm(combined_dataset$PM2.5[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka PM 2.5")
+qqline(combined_dataset$PM2.5[combined_dataset$Location == "Dhaka"],
+       col = "blue")
+```
 
-# Dhaka AQI
-Dhaka.AQI.monthly.trend <- trend::smk.test(Dhaka.AQI.monthly.ts)
-Dhaka.AQI.monthly.trend
-summary(Dhaka.AQI.monthly.trend)
-# Dhaka AQI not significant (p = 0.0768)
+```{r Checking for normality PM 10, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$PM10[combined_dataset$Location == "Delhi"],
+       main = "Delhi PM 10")
+qqline(combined_dataset$PM10[combined_dataset$Location == "Delhi"],
+       col = "blue")
+qqnorm(combined_dataset$PM10[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka PM 10")
+qqline(combined_dataset$PM10[combined_dataset$Location == "Dhaka"],
+       col = "blue")
+```
 
-
-# Dhaka PM2.5
-Dhaka.PM2.5.monthly.trend <- trend::smk.test(Dhaka.PM2.5.monthly.ts)
-Dhaka.PM2.5.monthly.trend
-summary(Dhaka.PM2.5.monthly.trend)
-# Dhaka PM2.5 not significant (p = 0.0768)
-
-# Dhaka PM10
-Dhaka.PM10.monthly.trend <- trend::smk.test(Dhaka.PM10.monthly.ts)
-Dhaka.PM10.monthly.trend
-summary(Dhaka.PM10.monthly.trend)
-# Dhaka PM2.5 not significant (p = 0.1068)
-
-# Dhaka O3
-Dhaka.Ozone.monthly.trend <- trend::smk.test(Dhaka.Ozone.monthly.ts)
-Dhaka.Ozone.monthly.trend
-summary(Dhaka.Ozone.monthly.trend)
-# Dhaka ozone (O3) is significant (1.432e-06)
-
-# Seasonal Mann-Kendall Delhi
-
-# Delhi AQI
-Delhi.AQI.monthly.trend <- trend::smk.test(Delhi.AQI.monthly.ts)
-Delhi.AQI.monthly.trend
-summary(Delhi.AQI.monthly.trend)
-# Delhi AQI not significant (0.3226)
-
-# Delhi PM2.5
-Delhi.PM2.5.monthly.trend <- trend::smk.test(Delhi.PM2.5.monthly.ts)
-Delhi.PM2.5.monthly.trend
-summary(Delhi.PM2.5.monthly.trend)
-# Delhi AQI not significant (0.08624)
-
-# Delhi PM10
-Delhi.PM10.monthly.trend <- trend::smk.test(Delhi.PM10.monthly.ts)
-Delhi.PM10.monthly.trend
-summary(Delhi.PM10.monthly.trend)
-# Delhi PM10 not significant (0.4257)
-
-# Delhi O3
-Delhi.Ozone.monthly.trend <- trend::smk.test(Delhi.Ozone.monthly.ts)
-Delhi.Ozone.monthly.trend
-summary(Delhi.Ozone.monthly.trend)
-# Delhi ozone (O3) not significant (0.3098)
-
-
-# Non-Seasonal Mann-Kendall Dhaka
-
-# Dhaka AQI
-Dhaka.monthly.AQI.nonseasonal <- Dhaka.AQI.monthly.ts - 
-  Dhaka.AQI.monthly.decomposed$time.series[,1]
-
-Dhaka.nonseasonal.AQI.trend <- Kendall::MannKendall(
-  Dhaka.monthly.AQI.nonseasonal)
-Dhaka.nonseasonal.AQI.trend
-summary(Dhaka.nonseasonal.AQI.trend)
-
-# Dhaka PM2.5
-Dhaka.monthly.PM2.5.nonseasonal <- Dhaka.PM2.5.monthly.ts - 
-  Dhaka.PM2.5.monthly.decomposed$time.series[,1]
-
-Dhaka.nonseasonal.PM2.5.trend <- Kendall::MannKendall(
-  Dhaka.monthly.PM2.5.nonseasonal)
-Dhaka.nonseasonal.PM2.5.trend
-summary(Dhaka.nonseasonal.PM2.5.trend)
-
-# Dhaka PM10
-Dhaka.monthly.PM10.nonseasonal <- Dhaka.PM10.monthly.ts - 
-  Dhaka.PM10.monthly.decomposed$time.series[,1]
-
-Dhaka.nonseasonal.PM10.trend <- Kendall::MannKendall(
-  Dhaka.monthly.PM10.nonseasonal)
-Dhaka.nonseasonal.PM10.trend
-summary(Dhaka.nonseasonal.PM10.trend)
-
-# Dhaka O3
-Dhaka.monthly.Ozone.nonseasonal <- Dhaka.Ozone.monthly.ts - 
-  Dhaka.Ozone.monthly.decomposed$time.series[,1]
-
-Dhaka.nonseasonal.Ozone.trend <- Kendall::MannKendall(
-  Dhaka.monthly.Ozone.nonseasonal)
-Dhaka.nonseasonal.Ozone.trend
-summary(Dhaka.nonseasonal.Ozone.trend)
-
-# Non-Seasonal Mann-Kendall Delhi
-
-# Delhi AQI
-Delhi.monthly.AQI.nonseasonal <- Delhi.AQI.monthly.ts - 
-  Delhi.AQI.monthly.decomposed$time.series[,1]
-
-Delhi.nonseasonal.AQI.trend <- Kendall::MannKendall(
-  Delhi.monthly.AQI.nonseasonal)
-Delhi.nonseasonal.AQI.trend
-summary(Delhi.nonseasonal.AQI.trend)
-
-# Delhi PM2.5
-Delhi.monthly.PM2.5.nonseasonal <- Delhi.PM2.5.monthly.ts - 
-  Delhi.PM2.5.monthly.decomposed$time.series[,1]
-
-Delhi.nonseasonal.PM2.5.trend <- Kendall::MannKendall(
-  Delhi.monthly.PM2.5.nonseasonal)
-Delhi.nonseasonal.PM2.5.trend
-summary(Delhi.nonseasonal.PM2.5.trend)
-
-# Delhi PM10
-Delhi.monthly.PM10.nonseasonal <- Delhi.PM10.monthly.ts - 
-  Delhi.PM10.monthly.decomposed$time.series[,1]
-
-Delhi.nonseasonal.PM10.trend <- Kendall::MannKendall(
-  Delhi.monthly.PM10.nonseasonal)
-Delhi.nonseasonal.PM10.trend
-summary(Delhi.nonseasonal.PM10.trend)
-
-# Delhi O3
-Delhi.monthly.Ozone.nonseasonal <- Delhi.Ozone.monthly.ts - 
-  Delhi.Ozone.monthly.decomposed$time.series[,1]
-
-Delhi.nonseasonal.Ozone.trend <- Kendall::MannKendall(
-  Delhi.monthly.Ozone.nonseasonal)
-Delhi.nonseasonal.Ozone.trend
-summary(Delhi.nonseasonal.Ozone.trend)
-
+```{r Checking for normality Ozone, message=FALSE, warning=FALSE, echo=FALSE, eval=FALSE}
+par(mfrow = c(1, 2))
+qqnorm(combined_dataset$O3[combined_dataset$Location == "Delhi"],
+       main = "Delhi O3")
+qqline(combined_dataset$O3[combined_dataset$Location == "Delhi"],
+       col = "blue")
+qqnorm(combined_dataset$O3[combined_dataset$Location == "Dhaka"],
+       main = "Dhaka O3")
+qqline(combined_dataset$O3[combined_dataset$Location == "Dhaka"],
+       col = "blue")
 ```
 
 Table: Summary of Mann-Kendall Results
@@ -509,22 +521,6 @@ Delhi | PM 2.5 | 0.0862 | **0.0330** | -197
 Delhi | PM 10 | 0.4257 | 0.1409 | -92
 Delhi | O3 | 0.3098 | 0.4421 | 117
 
-```{r two-sample t tests}
-
-# AQI
-t.test(AQI ~ Location, data = combined_dataset)
-
-# PM2.5
-t.test(PM2.5 ~ Location, data = combined_dataset)
-
-# PM10
-t.test(PM10 ~ Location, data = combined_dataset)
-
-# O3
-t.test(O3 ~ Location, data = combined_dataset)
-
-```
-
 Table: Summary of two sample t-test Results
 
 Variable | p-value | Dhaka mean | Delhi mean
@@ -534,30 +530,6 @@ PM2.5 | **2.2e-16**  | 100.21 | 240.54
 PM10 | **2.2e-16**  | 169.18 | 242.17
 O3| **2.2e-16**  | 50.87 | 31.78
 
-
-
-```{r linear regressions}
-
-#Linear Regression
-
-# AQI
-AQI.model <- lm(AQI ~ first.month * Location, data = combined_dataset)
-summary(AQI.model)
-
-# PM2.5
-PM2.5.model <- lm(PM2.5 ~ first.month * Location, data = combined_dataset)
-summary(PM2.5.model)
-
-# PM10
-PM10.model <- lm(PM10 ~ first.month * Location, data = combined_dataset)
-summary(PM10.model)
-
-
-# O3
-O3.model <- lm(O3 ~ first.month * Location, data = combined_dataset)
-summary(O3.model)
-```
-
 Table: Summary of Linear Regression Results
 
 Variable | p-value | Min | Median | Max | R-squared
@@ -566,3 +538,25 @@ AQI | **2.2e-16** | -152.894 | -1.296 | 93.331 | 0.812
 PM2.5 | **2.2e-16** | -127.439 | -3.511 | 79.986 | 0.894
 PM10 | **2.2e-16** | -214.902 | -5.708 | 128.747 | 0.634
 O3 | **2.2e-16** | -30.487 | -4.640 | 32.740 | 0.424
+
+## Discussion
+
+### Hypothesis 1: Does Air Quality Have a Significant Seasonal Component and Decreasing Trend?
+The STL decomposition answered the seasonal part clearly. Both cities show strong, predictable annual cycles, with pollution peaking every winter and dropping during the monsoon without fail. This is expected given the Indo-Gangetic Plain's meteorology, where cold dry winters trap pollutants near the surface and monsoon rains wash them out (Begum et al., 2018; Ditta et al., 2026).
+
+Finding a statistically significant decreasing trend was harder. The Mann-Kendall tests only confirmed significant declines in two out of eight combinations. Dhaka O3 was the clearest result, with both tests agreeing on a highly significant decline. Delhi PM2.5 only crossed the significance threshold after removing the seasonal component, suggesting the decline is real but gets partially buried in seasonal noise. Everything else came back non-significant. This does not mean pollution is not changing as Delhi's particulate decline is visually obvious, but it does mean the changes have not been consistent enough across all months and years to be statistically confirmed. That distinction between a visible trend and a statistically significant one is important when interpreting these results.
+
+### Hypothesis 2: Is Delhi's Air Quality Significantly Worse than Dhaka's?
+For particulate pollution, yes. Delhi's mean AQI, PM2.5, and PM10 were all significantly higher than Dhaka's across the full study period (p < 2.2e-16 for all three), which is consistent with Delhi's reputation as one of the most polluted cities in South Asia (Singh et al., 2023).
+Ozone flipped this result entirely. Dhaka had significantly higher mean O3 than Delhi, which goes against the expectation that Delhi would simply be worse across the board. Unlike particulate matter, ozone forms through photochemical reactions rather than direct emissions, so the two cities having different ozone profiles is not necessarily contradictory. Dhaka's consistently higher ozone, combined with the unusual jump in values around 2007 to 2008, suggests either a change in monitoring methodology or a genuine shift in photochemical activity following fuel regulation changes in Bangladesh. Either way, it is a finding worth investigating further and it shows that framing Delhi as simply more polluted than Dhaka is an oversimplification.
+
+### Hypothesis 3: Is Delhi's Air Quality Decreasing More Rapidly than Dhaka's?
+The linear regression gave the clearest answer here. The interaction term between time and location was significant in all four models, confirming that the two cities are changing at statistically different rates for every pollutant. For AQI, PM2.5, and PM10, Delhi was declining while Dhaka was increasing. The models fit this pattern well, particularly for PM2.5 (R squared = 0.89) and AQI (R squared = 0.81), giving us confidence that time and location together genuinely explain most of the variation in particulate pollution. PM10 fit moderately (R squared = 0.63) and O3 fit less well (R squared = 0.43), which makes sense given how much more complex ozone formation is compared to direct particulate emissions.
+For O3, the roles reversed. Delhi's ozone was rising while Dhaka's was declining, and both the regression interaction term and the Mann-Kendall tests told the same consistent story. So to directly answer Hypothesis 3: yes, Delhi's particulate pollution is decreasing more rapidly than Dhaka's, and the gap has been narrowing throughout the study period. The PM10 lines have already crossed.
+All three analyses point to the same conclusion. Delhi and Dhaka are converging from opposite directions for particulate pollution. Delhi started far worse but its policy interventions, including stricter vehicle emissions standards, metro rail expansion, and the National Clean Air Programme, appear to have made a real difference (Garg et al., 2022). Dhaka, despite early gains from banning two-stroke engines, has seen particulate pollution worsen steadily as urbanization, vehicle growth, and brick kiln proliferation have outpaced regulatory capacity (State of Global Air, n.d.). If these trends continue, Dhaka is on track to approach Delhi level particulate pollution within the coming decades, and Bangladesh's National Air Quality Management Plan 2024 to 2030 will need to deliver meaningful results to change that trajectory (World Bank, 2022).
+Dhaka is the significant decline in ozone confirmed by both the Mann-Kendall tests and the regression model. However, given the unusual data patterns in both cities' O3 series, those results deserve some caution and would benefit from validation against independent monitoring sources.
+
+
+## Limitations
+## Conclusion
+## References
